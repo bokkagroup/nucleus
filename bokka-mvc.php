@@ -13,7 +13,6 @@ Author URI: http://bokkagroup.com
 */
 
 namespace BokkaWP;
-define("BGMVC_DIR", plugin_dir_path(__FILE__) );
 
 /**
  * BokkaBuilder
@@ -23,72 +22,49 @@ class MVC {
 
 	private static $instance;
 
-
 	public function __construct()
     {
-        $this->pluginDir =  plugin_dir_path( __FILE__ );
-
 		//Set directory variables
-        define("BOKKA_PARENT_DIR", get_template_directory());
-        define("BOKKA_CHILD_DIR", get_stylesheet_directory());
+        define("BOKKA_MVC_DIRECTORY",   plugin_dir_path(__FILE__));
 
         $this->loadHandlebars();
 
 		//load base classes
-		require_once(BGMVC_DIR . 'controllers/BaseController.php');
-		require_once(BGMVC_DIR . 'views/BaseView.php');
-		require_once(BGMVC_DIR . 'models/BaseModel.php');
+		require_once(BOKKA_MVC_DIRECTORY . 'controllers/BaseController.php');
+		require_once(BOKKA_MVC_DIRECTORY . 'views/BaseView.php');
+		require_once(BOKKA_MVC_DIRECTORY . 'models/BaseModel.php');
 
-        require_once(BGMVC_DIR . 'autoloader.php');
+        require_once(BOKKA_MVC_DIRECTORY . 'autoloader.php');
 
 		//auto load controllers
-		if (!is_admin()) {
-			$this->autoLoad();
-		}
+        add_action('init', array($this, 'autoLoad'));
 	}
 
-    /**
-     * Create Directories on plugin activation
-     */
-    static public function install()
+    private function loadHandlebars()
     {
-        if (!file_exists(get_template_directory() . '/templates')) {
-            mkdir( get_template_directory() . '/templates', 0755 );
-        }
-
-        if (!file_exists(get_template_directory() . '/controllers')) {
-            mkdir( get_template_directory() . '/templates', 0755 );
-        }
-
-        if (!file_exists(get_template_directory() . '/views')) {
-            mkdir( get_template_directory() . '/templates', 0755 );
-        }
-
-        if (!file_exists(get_template_directory() . '/models')) {
-            mkdir( get_template_directory() . '/templates', 0755 );
-        }
-
-        return;
-    }
-
-    private function loadHandlebars(){
     //load mustache if nobody else has
         if (!class_exists('Mustache_Autoloader') && !class_exists('Mustache_Engine')) {
             global $Handlebars;
-            require_once(BGMVC_DIR . 'lib/Handlebars/Autoloader.php');
+            require_once(BOKKA_MVC_DIRECTORY . 'lib/Handlebars/Autoloader.php');
         }
 
         \Handlebars\Autoloader::register();
 
-        if (file_exists(BOKKA_CHILD_DIR)) {$templateDir = BOKKA_CHILD_DIR;
-        } else {
+        if (file_exists(BOKKA_CHILD_DIR) 
+            && file_exists(BOKKA_CHILD_DIR . '/templates')) {
+            $templateDir = BOKKA_CHILD_DIR;
+        } else if (file_exists(BOKKA_PARENT_DIR) 
+            && file_exists(BOKKA_PARENT_DIR . '/templates')) {
             $templateDir = BOKKA_PARENT_DIR;
+        } else {
+            error_log( 'BokkaMVC Error: '. __( 'Could not find any directories for templates, you may need to add a folder in your child or parent theme.', 'BOKKA_MVC' ) );
+            return;
         }
 
         $Handlebars = new \Handlebars\Handlebars(
             array(
-                'loader' => new \Handlebars\Loader\FilesystemLoader($templateDir.'/templates'),
-                'partials_loader' => new \Handlebars\Loader\FilesystemLoader(BOKKA_CHILD_DIR.'/templates'),
+                'loader' => new \Handlebars\Loader\FilesystemLoader($templateDir . '/templates'),
+                'partials_loader' => new \Handlebars\Loader\FilesystemLoader($templateDir . '/templates'),
             )
         );
 
@@ -125,8 +101,8 @@ class MVC {
 	public function loadFiles($type)
     {
 		$typeURI = strtolower('/' . $type . '/');
-                $parentFiles = array();
-                $childFiles = array();
+        $parentFiles = array();
+        $childFiles = array();
 
 		//make sure there are directories to introspect
 		if (!file_exists( BOKKA_CHILD_DIR . $typeURI)
@@ -156,7 +132,7 @@ class MVC {
 		}
 
 
-		//oad remaining child files
+		//load remaining child files
 		if (isset($childFiles) && $childFiles !== $parentFiles) {
 			foreach ($childFiles as $file) {
 				require_once(BOKKA_CHILD_DIR . $typeURI . $file);
@@ -199,5 +175,3 @@ class MVC {
 }
 
 $BGMVC = MVC::get_instance();
-
-register_activation_hook(__FILE__, array('\BokkaWP\MVC','install'));

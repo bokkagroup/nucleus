@@ -30,6 +30,8 @@ class autoloader
 
         $fileName = end($classArray) . '.php';
 
+        if(!isset($fileType))
+            return;
 
         $childFileURI = implode('/', array(BOKKA_CHILD_DIR, $fileType, $fileName));
         $parentFileURI = implode('/', array(BOKKA_PARENT_DIR, $fileType, $fileName));

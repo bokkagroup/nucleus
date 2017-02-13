@@ -4,7 +4,7 @@ Class Model {
 
     public $data = array();
 
-    public function __construct(){
-        $this->initialize();
+    public function __construct($post_id = null){
+        $this->initialize($post_id);
     }
 }
