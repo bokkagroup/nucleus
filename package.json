@@ -1,0 +1,14 @@
+{
+  "name": "bokka-wp-mvc",
+  "version": "0.0.1",
+  "description": "Creates an MVC like, more a MVVM, architecture to be used in Wordpress.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "phplint": "^1.7.1"
+  }
+}
