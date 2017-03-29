@@ -1,5 +1,6 @@
 {
     "name": "bokka/bokka-wp-mvc",
+    "type": "wordpress-muplugin",
     "description": "This plugin houses the core components that makeup the Bokka MVC wordpress framework. Our base models as well as our autoloders.",
     "license": "GNU2",
     "authors": [
@@ -8,5 +9,7 @@
             "email": "mikemcguire.dev@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "composer/installers": "~1.0"
+    }
 }
