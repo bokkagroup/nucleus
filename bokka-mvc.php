@@ -50,12 +50,12 @@ class MVC {
 
         \Handlebars\Autoloader::register();
 
-        if (file_exists(BOKKA_CHILD_DIR) 
-            && file_exists(BOKKA_CHILD_DIR . '/templates')) {
-            $templateDir = BOKKA_CHILD_DIR;
-        } else if (file_exists(BOKKA_PARENT_DIR) 
-            && file_exists(BOKKA_PARENT_DIR . '/templates')) {
-            $templateDir = BOKKA_PARENT_DIR;
+        if (file_exists('BOKKA_CHILD_DIR')
+            && file_exists('BOKKA_CHILD_DIR' . '/templates')) {
+            $templateDir = 'BOKKA_CHILD_DIR';
+        } else if (file_exists('BOKKA_PARENT_DIR')
+            && file_exists('BOKKA_PARENT_DIR' . '/templates')) {
+            $templateDir = 'BOKKA_PARENT_DIR';
         } else {
             error_log( 'BokkaMVC Error: '. __( 'Could not find any directories for templates, you may need to add a folder in your child or parent theme.', 'BOKKA_MVC' ) );
             return;
