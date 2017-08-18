@@ -1,6 +1,6 @@
 <?php
 
-namespace BokkaWP\MVC;
+namespace CatalystWP\MVC;
 Class View {
 
     /**
@@ -13,7 +13,7 @@ Class View {
     {
         global $Handlebars;
         if (isset($this->template)) {
-            apply_filters( 'bokkamvc_filter_before_render', $data);
+            apply_filters( 'catatlystwp_mvc_filter_before_render', $data);
             $template = $Handlebars->render($this->template, $data);
         }
        return $template;
@@ -26,9 +26,9 @@ Class View {
     public function display($data = array())
     {
         if (isset($this->template)) {
-            do_action( 'bokkamvc_before_display', $data);
+            do_action( 'catatlystwp_mvc_before_display', $data);
             echo $this->render($data);
-            do_action( 'bokkamvc_after_display', $data);
+            do_action( 'catatlystwp_mvc_after_display', $data);
         }
         return;
     }

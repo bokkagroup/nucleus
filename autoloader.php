@@ -1,6 +1,6 @@
 <?php
 
-namespace BokkaWP\MVC;
+namespace CatalystWP\MVC;
 
 class autoloader
 {
@@ -14,7 +14,7 @@ class autoloader
 
         $classArray = explode('\\', $className);
 
-        if ($classArray[0] !== "BokkaWP") {
+        if ($classArray[0] !== "CatalystWP") {
             return;
         }
 
@@ -33,12 +33,12 @@ class autoloader
         if(!isset($fileType))
             return;
 
-        $childFileURI = implode('/', array(BOKKA_CHILD_DIR, $fileType, $fileName));
-        $parentFileURI = implode('/', array(BOKKA_PARENT_DIR, $fileType, $fileName));
+        $childFileURI = implode('/', array(THEME_CHILD_DIR, $fileType, $fileName));
+        $parentFileURI = implode('/', array(THEME_PARENT_DIR, $fileType, $fileName));
 
         //make sure the file exists
         if(!file_exists($childFileURI) && !file_exists($parentFileURI)) {
-            error_log( 'BokkaMVC Error: '. __( 'Could not find file {' . $fileType . $fileName . '}, please create file.', 'BOKKA_MVC' ) );
+            error_log( 'Catalyst WP Error: '. __( 'Could not find file {' . $fileType . $fileName . '}, please create file.', 'CATALYST_WP_MVC' ) );
             return;
         }
 
