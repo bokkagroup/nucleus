@@ -1,12 +1,12 @@
 {
-    "name": "bokka/bokka-wp-mvc",
+    "name": "bokka/catalyst-wp-mvc",
     "type": "wordpress-muplugin",
-    "description": "This plugin houses the core components that makeup the Bokka MVC wordpress framework. Our base models as well as our autoloders.",
+    "description": "A plugin that provides MVC functionality in the Catalyst WP Toolbox. .",
     "license": "GNU2",
     "authors": [
         {
-            "name": "codewizard",
-            "email": "mikemcguire.dev@gmail.com"
+            "name": "Mike McGuire",
+            "email": "mike@bokkagroup.com"
         }
     ],
     "require": {
