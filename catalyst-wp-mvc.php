@@ -30,7 +30,8 @@ class MVC {
 		//load base classes
 		require_once(CATALYST_WP_MVC_DIRECTORY . 'controllers/BaseController.php');
 		require_once(CATALYST_WP_MVC_DIRECTORY . 'views/BaseView.php');
-		require_once(CATALYST_WP_MVC_DIRECTORY . 'models/BaseModel.php');
+        require_once(CATALYST_WP_MVC_DIRECTORY . 'models/BaseModel.php');
+		require_once(CATALYST_WP_MVC_DIRECTORY . 'models/Menu.php');
 
         require_once(CATALYST_WP_MVC_DIRECTORY . 'autoloader.php');
 

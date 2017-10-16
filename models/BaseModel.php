@@ -1,6 +1,9 @@
 <?php
+
 namespace CatalystWP\MVC;
-Class Model {
+
+Class Model
+{
 
     public $data = array();
 

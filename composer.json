@@ -1,7 +1,7 @@
 {
     "name": "bokkagroup/catalyst-wp-mvc",
     "type": "wordpress-muplugin",
-    "description": "A plugin that provides MVC functionality in the Catalyst WP Toolbox. .",
+    "description": "A plugin that provides MVC functionality in the Catalyst WP Toolbox.",
     "license": "GNU2",
     "authors": [
         {
