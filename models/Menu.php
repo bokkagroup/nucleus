@@ -25,10 +25,10 @@ namespace CatalystWP\MVC\models;
  *
  * Usage example:
  *  $this->data['menu'] = new Menu('primary');
-    $this->data['menu']->updateMenuItems(function($value, $key) {
-        $value['foo'] = 'bar';
-        return $value;
-    });
+ *  $this->data['menu']->updateMenuItems(function($value, $key) {
+ *      $value['foo'] = 'bar';
+ *     return $value;
+ *  });
  *
  * This example would add the 'foo' property with a value of 'bar' to
  * all items in the $links array.
