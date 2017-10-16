@@ -1,5 +1,5 @@
 <?php
-namespace BokkaWP\MVC;
+namespace CatalystWP\MVC;
 Class Model {
 
     public $data = array();

@@ -1,5 +1,7 @@
 <?php
-namespace BokkaWP\MVC;
+
+namespace CatalystWP\MVC;
+
 global $BGMVC;
 
 Class Controller {
@@ -15,8 +17,8 @@ Class Controller {
         $modelClass = explode("Controller",  $controllerName )[0];
 
 		//load the model file
-		$BGMVC->loadFile( $modelClass . '.php', 'models' );
-        $modelClass = '\BokkaWP\theme\models\\'.$modelClass;
+		\CatalystWP\MVC::loadFile( $modelClass . '.php', 'models' );
+        $modelClass = '\CatalystWP\theme\models\\'.$modelClass;
 		//instantiate the model
 
 		if (class_exists($modelClass))
@@ -33,8 +35,8 @@ Class Controller {
 		$viewClass = explode("Controller",  $controllerName )[0] . 'View';
 
 		//load the view file
-		$BGMVC->loadFile( $viewClass . '.php', 'views' );
-        $viewClass = '\BokkaWP\theme\views\\'.$viewClass;
+        \CatalystWP\MVC::loadFile( $viewClass . '.php', 'views' );
+        $viewClass = '\CatalystWP\theme\views\\'.$viewClass;
 		//instantiate the view
 		if( class_exists( $viewClass ) )
             return new $viewClass();
@@ -49,5 +51,4 @@ Class Controller {
 
 		$this->initialize();
 	}
-	
 }
