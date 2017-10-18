@@ -5,11 +5,6 @@ namespace CatalystWP\MVC\models;
 /**
  * Retrieve and modify WordPress menu data.
  *
- * Creates a new instance of the CatalystWP\MVC\models\Menu Object class.
- * This object has two main properties: 'links' and 'wp_menu'.
- * Menu->links is a multidimensional array of all menu data.
- * Menu->wp_menu is an instance of the original WP_Term Object.
- *
  * --
  *
  * There is a public method updateMenuItems that can be called inside
@@ -36,7 +31,16 @@ namespace CatalystWP\MVC\models;
  */
 Class Menu
 {
+    /**
+     * Array of all menu data
+     * @var array
+     */
     public $links;
+
+    /**
+     * WP_Term Object
+     * @var object
+     */
     public $wp_menu;
 
     /**
