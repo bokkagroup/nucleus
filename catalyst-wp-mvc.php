@@ -28,8 +28,15 @@ class MVC {
         $this->loadHandlebars();
 
         //load base classes
+        //controllers
         require_once(CATALYST_WP_MVC_DIRECTORY . 'controllers/BaseController.php');
+
+        //views
         require_once(CATALYST_WP_MVC_DIRECTORY . 'views/BaseView.php');
+        require_once(CATALYST_WP_MVC_DIRECTORY . 'views/HeadView.php');
+        require_once(CATALYST_WP_MVC_DIRECTORY . 'views/FootView.php');
+
+        //models
         require_once(CATALYST_WP_MVC_DIRECTORY . 'models/BaseModel.php');
         require_once(CATALYST_WP_MVC_DIRECTORY . 'models/Menu.php');
         require_once(CATALYST_WP_MVC_DIRECTORY . 'models/Image.php');
@@ -42,7 +49,6 @@ class MVC {
 
     private function loadHandlebars()
     {
-    //load mustache if nobody else has
         if (!class_exists('Mustache_Autoloader') && !class_exists('Mustache_Engine')) {
             global $Handlebars;
             require_once(CATALYST_WP_MVC_DIRECTORY . 'lib/Handlebars/Autoloader.php');
@@ -67,13 +73,39 @@ class MVC {
             )
         );
 
+        $Handlebars->addHelper('wp_footer', function($options) {
+            ob_start();
+            wp_footer();
+            $wp_footer = ob_get_contents();
+            ob_end_clean();
+
+            return $wp_footer;
+        });
+
+        $Handlebars->addHelper('wp_head', function($options) {
+            ob_start();
+            wp_head();
+            $wp_head = ob_get_contents();
+            ob_end_clean();
+
+            return $wp_head;
+        });
+
+        $Handlebars->addHelper('body_class', function($options) {
+            ob_start();
+            body_class();
+            $body_class = ob_get_contents();
+            ob_end_clean();
+
+            return $body_class;
+        });
     }
 
     /**
      * Singleton instantiation
      * @return [static] instance
      */
-    public static function get_instance()
+    public static function getInstance()
     {
         if (null === static::$instance) {
             static::$instance = new static();
@@ -86,7 +118,7 @@ class MVC {
     public function autoLoad()
     {
         self::loadFile('config.php');
-        self::loadFiles( 'helpers' );
+        self::loadFiles('helpers');
         new \CatalystWP\MVC\autoloader();
 
         return;
@@ -130,7 +162,6 @@ class MVC {
             }
         }
 
-
         //load remaining child files
         if (isset($childFiles) && $childFiles !== $parentFiles) {
             foreach ($childFiles as $file) {
@@ -139,7 +170,6 @@ class MVC {
         }
 
         return;
-
     }
 
     /**
@@ -160,7 +190,7 @@ class MVC {
             return;
         }
 
-        //load it ( check child theme first )
+        //load it (check child theme first)
         if(file_exists($childFileURI))
             require_once($childFileURI);
 
@@ -168,9 +198,7 @@ class MVC {
             require_once($parentFileURI);
 
         return;
-
     }
-
 }
 
-MVC::get_instance();
+MVC::getInstance();
