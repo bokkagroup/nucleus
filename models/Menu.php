@@ -57,6 +57,10 @@ Class Menu
      */
     protected function setMenuItems()
     {
+        if (!is_a($this->wp_menu, 'WP_Term')) {
+            return;
+        }
+
         $menu_items = wp_get_nav_menu_items($this->wp_menu->term_id, array('order' => 'DESC'));
         $menu_object = array();
 
