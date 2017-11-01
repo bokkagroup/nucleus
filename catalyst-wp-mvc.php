@@ -119,6 +119,7 @@ class MVC {
     {
         self::loadFile('config.php');
         self::loadFiles('helpers');
+        self::loadFiles('models/organisms');
         new \CatalystWP\MVC\autoloader();
 
         return;
