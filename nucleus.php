@@ -119,8 +119,6 @@ class Nucleus {
     {
         self::loadFile('config.php');
         self::loadFiles('helpers');
-        self::loadFiles('models/organisms');
-        //new \CatalystWP\Nucleus\autoloader();
 
         return;
     }

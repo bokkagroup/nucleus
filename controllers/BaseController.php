@@ -14,13 +14,9 @@ Class Controller {
         global $BGMVC;
         //parse model class name
         $controllerName = basename(str_replace('\\', '/', get_class($this)));
-        $modelClass = explode("Controller",  $controllerName )[0];
+        $modelClass = '\CatalystWP\Atom\models\\'. explode("Controller",  $controllerName )[0];
 
-        //load the model file
-        \CatalystWP\Nucleus::loadFile( $modelClass . '.php', 'models' );
-        $modelClass = '\CatalystWP\theme\models\\'.$modelClass;
         //instantiate the model
-
         if (class_exists($modelClass))
             return new $modelClass();
 
@@ -32,11 +28,8 @@ Class Controller {
 
         //parse view class name
         $controllerName = basename(str_replace('\\', '/', get_class($this)));
-        $viewClass = explode("Controller",  $controllerName )[0] . 'View';
+        $viewClass = '\CatalystWP\Atom\views\\'. explode("Controller",  $controllerName )[0] . 'View';
 
-        //load the view file
-        \CatalystWP\Nucleus::loadFile( $viewClass . '.php', 'views' );
-        $viewClass = '\CatalystWP\theme\views\\'.$viewClass;
         //instantiate the view
         if( class_exists( $viewClass ) )
             return new $viewClass();
