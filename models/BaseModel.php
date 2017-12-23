@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC;
+namespace CatalystWP\Nucleus;
 
 Class Model
 {

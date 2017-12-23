@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC;
+namespace CatalystWP\Nucleus;
 
 class autoloader
 {
@@ -38,7 +38,7 @@ class autoloader
 
         //make sure the file exists
         if(!file_exists($childFileURI) && !file_exists($parentFileURI)) {
-            error_log( 'Catalyst WP Error: '. __( 'Could not find file {' . $fileType . $fileName . '}, please create file.', 'CATALYST_WP_MVC' ) );
+            error_log( 'Catalyst WP Error: '. __( 'Could not find file {' . $fileType . $fileName . '}, please create file.', 'CATALYST_WP_NUCLEUS' ) );
             return;
         }
 

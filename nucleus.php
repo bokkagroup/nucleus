@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Catalyst WP MVC
+Plugin Name: Catalyst WP - Nucleus
 Plugin URI: http://github.com
-Description: Creates a global interface for handling MVC components in a Wordpress Theme. It's main purpose is to create a global object that will allow us to override models/views/templates in our child-themes.
-Author: Mike McGuire
+Description: Creates a global interface for handling MVC components in a Wordpress Theme. It's main purpose is to provide the base utility classes that allow for an organized code structure.
+Author: Bokka Group
 Version: 0.0.1
 Author URI: http://bokkagroup.com
 */
@@ -14,14 +14,14 @@ namespace CatalystWP;
  * CatalystWP
  * @version 0.0.1 Singleton
  */
-class MVC {
+class Nucleus {
 
     private static $instance;
 
     public function __construct()
     {
         //Set directory variables
-        define("CATALYST_WP_MVC_DIRECTORY",   plugin_dir_path(__FILE__));
+        define("CATALYST_WP_NUCLEUS_DIRECTORY",   plugin_dir_path(__FILE__));
         define("THEME_PARENT_DIR", get_template_directory());
         define("THEME_CHILD_DIR", get_stylesheet_directory());
 
@@ -29,19 +29,19 @@ class MVC {
 
         //load base classes
         //controllers
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'controllers/BaseController.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'controllers/BaseController.php');
 
         //views
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'views/BaseView.php');
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'views/HeadView.php');
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'views/FootView.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/BaseView.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/HeadView.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/FootView.php');
 
         //models
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'models/BaseModel.php');
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'models/Menu.php');
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'models/Image.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/BaseModel.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        require_once(CATALYST_WP_MVC_DIRECTORY . 'autoloader.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
 
         //auto load controllers
         add_action('init', array($this, 'autoLoad'));
@@ -51,7 +51,7 @@ class MVC {
     {
         if (!class_exists('Mustache_Autoloader') && !class_exists('Mustache_Engine')) {
             global $Handlebars;
-            require_once(CATALYST_WP_MVC_DIRECTORY . 'lib/Handlebars/Autoloader.php');
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
         }
 
         \Handlebars\Autoloader::register();
@@ -62,7 +62,7 @@ class MVC {
             && file_exists(THEME_PARENT_DIR . '/templates')) {
             $templateDir = THEME_PARENT_DIR . '/templates';
         } else {
-            error_log( 'catatlystwp_mvc Error: '. __( 'Could not find any directories for templates, you may need to add a folder in your child or parent theme.', 'CATALYST_WP_MVC' ) );
+            error_log( 'catatlystwp_nucleus Error: '. __( 'Could not find any directories for templates, you may need to add a folder in your child or parent theme.', 'CATALYST_WP_NUCLEUS' ) );
             return;
         }
 
@@ -120,7 +120,7 @@ class MVC {
         self::loadFile('config.php');
         self::loadFiles('helpers');
         self::loadFiles('models/organisms');
-        new \CatalystWP\MVC\autoloader();
+        new \CatalystWP\Nucleus\autoloader();
 
         return;
     }
@@ -139,7 +139,7 @@ class MVC {
         //make sure there are directories to introspect
         if (!file_exists( THEME_CHILD_DIR . $typeURI)
             && !file_exists(THEME_PARENT_DIR . $typeURI)) {
-            error_log( 'Catalyst WP Error: '. __( 'Could not find any directories for {'. $type . '}, you may need to add a folder in your child or parent theme.', 'CATALYST_WP_MVC' ) );
+            error_log( 'Catalyst WP Error: '. __( 'Could not find any directories for {'. $type . '}, you may need to add a folder in your child or parent theme.', 'CATALYST_WP_NUCLEUS' ) );
             return;
         }
 
@@ -187,7 +187,7 @@ class MVC {
 
         //make sure the file exists
         if(!file_exists($childFileURI) && !file_exists($parentFileURI)) {
-            error_log( 'Catalyst WP Warning: '. __( 'Could not find file {' . $typeURI . $fileName . '}, please create file.', 'CATALYST_WP_MVC' ) );
+            error_log( 'Catalyst WP Warning: '. __( 'Could not find file {' . $typeURI . $fileName . '}, please create file.', 'CATALYST_WP_NUCLEUS' ) );
             return;
         }
 
@@ -202,4 +202,4 @@ class MVC {
     }
 }
 
-MVC::getInstance();
+Nucleus:getInstance();

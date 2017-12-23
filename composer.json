@@ -1,5 +1,5 @@
 {
-    "name": "bokkagroup/catalyst-wp-mvc",
+    "name": "bokkagroup/nucleus",
     "type": "wordpress-plugin",
     "description": "A plugin that provides MVC functionality in the Catalyst WP Toolbox.",
     "license": "GNU2",

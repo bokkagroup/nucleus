@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC;
+namespace CatalystWP\Nucleus;
 
 Class View {
 
@@ -18,7 +18,7 @@ Class View {
             $template = $this->template;
         }
         if (isset($template)) {
-            apply_filters('catatlystwp_mvc_filter_before_render', $data);
+            apply_filters('catatlystwp_nucleus_filter_before_render', $data);
             $template = $Handlebars->render($template, $data);
         }
        return $template;
@@ -32,9 +32,9 @@ Class View {
     {
         if (isset($this->template)) {
             echo $this->render(array('BOKKA' => array('env_local' => false)), 'head');
-            do_action('catatlystwp_mvc_before_display', $data);
+            do_action('catatlystwp_nucleus_before_display', $data);
             echo $this->render($data);
-            do_action('catatlystwp_mvc_after_display', $data);
+            do_action('catatlystwp_nucleus_after_display', $data);
             echo $this->render(array('BOKKA' => array('env_local' => false)), 'foot');
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC\models;
+namespace CatalystWP\Nucleus\models;
 
 /**
  * Returns a new instance of an Image object

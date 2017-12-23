@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC\models;
+namespace CatalystWP\Nucleus\models;
 
 /**
  * Retrieve and modify WordPress menu data.

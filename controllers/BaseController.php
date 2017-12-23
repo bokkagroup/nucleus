@@ -1,6 +1,6 @@
 <?php
 
-namespace CatalystWP\MVC;
+namespace CatalystWP\Nucleus;
 
 global $BGMVC;
 
@@ -17,7 +17,7 @@ Class Controller {
         $modelClass = explode("Controller",  $controllerName )[0];
 
         //load the model file
-        \CatalystWP\MVC::loadFile( $modelClass . '.php', 'models' );
+        \CatalystWP\Nucleus::loadFile( $modelClass . '.php', 'models' );
         $modelClass = '\CatalystWP\theme\models\\'.$modelClass;
         //instantiate the model
 
@@ -35,7 +35,7 @@ Class Controller {
         $viewClass = explode("Controller",  $controllerName )[0] . 'View';
 
         //load the view file
-        \CatalystWP\MVC::loadFile( $viewClass . '.php', 'views' );
+        \CatalystWP\Nucleus::loadFile( $viewClass . '.php', 'views' );
         $viewClass = '\CatalystWP\theme\views\\'.$viewClass;
         //instantiate the view
         if( class_exists( $viewClass ) )
