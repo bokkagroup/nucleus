@@ -41,7 +41,7 @@ class Nucleus {
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
+        //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
 
         //auto load controllers
         add_action('init', array($this, 'autoLoad'));
@@ -120,7 +120,7 @@ class Nucleus {
         self::loadFile('config.php');
         self::loadFiles('helpers');
         self::loadFiles('models/organisms');
-        new \CatalystWP\Nucleus\autoloader();
+        //new \CatalystWP\Nucleus\autoloader();
 
         return;
     }
