@@ -202,4 +202,4 @@ class Nucleus {
     }
 }
 
-Nucleus:getInstance();
+Nucleus::getInstance();
