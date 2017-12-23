@@ -11,6 +11,6 @@
     ],
     "require": {
         "composer/installers": "~1.0",
-        "tmilos/lexer ": "1.0.*"
+        "tmilos/lexer": "1.0.*"
     }
 }
