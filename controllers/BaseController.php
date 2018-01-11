@@ -2,8 +2,6 @@
 
 namespace CatalystWP\Nucleus;
 
-global $BGMVC;
-
 Class Controller {
 
     /**
@@ -11,30 +9,30 @@ Class Controller {
      * @return [type] [description]
      */
     public function loadModel(){
-        global $BGMVC;
+
         //parse model class name
-        $controllerName = basename(str_replace('\\', '/', get_class($this)));
-        $modelClass = '\CatalystWP\Atom\models\\'. explode("Controller",  $controllerName )[0];
+        $nameSpace = explode('\\', get_class($this));
+        $modelClass = '\CatalystWP\\'.$nameSpace[1] .'\\models\\'. explode("Controller",  end($nameSpace) )[0];
 
         //instantiate the model
         if (class_exists($modelClass))
             return new $modelClass();
 
+        return false;
 
     }
 
     public function loadView( ){
-        global $BGMVC;
 
         //parse view class name
-        $controllerName = basename(str_replace('\\', '/', get_class($this)));
-        $viewClass = '\CatalystWP\Atom\views\\'. explode("Controller",  $controllerName )[0] . 'View';
+        $nameSpace = explode('\\', get_class($this));
+        $viewClass = '\CatalystWP\\'.$nameSpace[1] .'\\views\\'. explode("Controller",  end($nameSpace) )[0] .'View';
 
         //instantiate the view
         if( class_exists( $viewClass ) )
             return new $viewClass();
 
-        return 0;
+        return false;
     }
 
 
