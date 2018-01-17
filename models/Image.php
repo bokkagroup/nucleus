@@ -25,9 +25,12 @@ class Image
     public function __construct($id)
     {
         $this->post = get_post($id);
-        $this->setCaption();
-        $this->setUrls();
-        $this->setSrc();
+
+        if (is_a($this->post, 'WP_Post') && $this->post->post_type === 'attachment') {
+            $this->setCaption();
+            $this->setUrls();
+            $this->setSrc();
+        }
     }
 
     /**
