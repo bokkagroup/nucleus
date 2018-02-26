@@ -23,11 +23,12 @@ Class Model
             $this->import($this->options['post_id']);
         }
 
+        $this->initialize();
+
         if (isset($this->options['parent_blog'])) {
             restore_current_blog();
         }
 
-        $this->initialize();
     }
 
     /**
