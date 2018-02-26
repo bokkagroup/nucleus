@@ -16,7 +16,7 @@ Class Controller {
 
         //instantiate the model
         if (class_exists($modelClass))
-            return new $modelClass();
+            return new $modelClass($this->options);
 
         return false;
 
@@ -36,9 +36,15 @@ Class Controller {
     }
 
 
-    public function __construct(){
+    public function __construct($options = array()){
+        $this->options = $options;
+
         $this->model = $this->loadModel();
         $this->view = $this->loadView();
+
+        if (isset($options['json']) && $options['json']) {
+            $this->json = $options['json'];
+        }
 
         $this->initialize();
     }
