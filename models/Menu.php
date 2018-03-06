@@ -75,7 +75,7 @@ Class Menu
             }
 
             if (!$item->menu_item_parent) {
-                $menu_item['parent'] = true;
+                $menu_item['parent'] = false;
                 $menu_object[$item->ID] = $menu_item;
             } else {
                 $menu_item['child'] = true;
