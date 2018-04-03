@@ -58,26 +58,21 @@ class Nucleus {
      */
     public function createModelResources()
     {
-        //TODO: Refactor to use loadFiles function below
-        if (file_exists(THEME_CHILD_DIR . '/models')) {
-            $dir = new \DirectoryIterator(THEME_CHILD_DIR . '/models');
-            foreach ($dir as $file) {
-                if (!$file->isDot() && $file->isFile()) {
-                    $filename = $file->getFilename();
-                    $class_name = explode('.', $filename);
-                    require_once(THEME_CHILD_DIR . '/models/' . $filename);
+        self::loadFiles('models');
 
-                    //TODO: Make theme namespace dynamic
-                    $namespace = "CatalystWP\Atom\models\\";
-                    $class = $namespace . $class_name[0];
-
-                    if (class_exists($class) && property_exists($class, 'resource')) {
-                        $vars = get_class_vars($class);
-                        Resource::registerPostType($class, $vars['resource']);
-                    }
-                }
+        $classes = get_declared_classes();
+        array_filter($classes, function ($class) {
+            if (strpos($class, 'CatalystWP\Atom\models') === false) {
+                return;
             }
-        }
+
+            if (property_exists($class, 'resource')) {
+                $vars = get_class_vars($class);
+                Resource::registerPostType($class, $vars['resource']);
+            }
+
+            return $class;
+        });
 
         return;
     }
@@ -178,11 +173,11 @@ class Nucleus {
 
         //get some arrays of our filenames
         if (file_exists(THEME_PARENT_DIR . $typeURI))
-            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..') );
+            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..'));
 
 
         if (file_exists(THEME_CHILD_DIR . $typeURI))
-            $childFiles =  array_diff( scandir( THEME_CHILD_DIR . $typeURI ), array('.', '..') );
+            $childFiles = array_diff(scandir(THEME_CHILD_DIR . $typeURI ), array('.', '..'));
 
 
         //get the diff and remove dupes from parent (child overrides parent)
@@ -192,14 +187,18 @@ class Nucleus {
         //load remaining parent files
         if (isset($parentFiles)) {
             foreach ($parentFiles as $file) {
-                require_once( THEME_PARENT_DIR . $typeURI . $file);
+                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                    require_once(THEME_PARENT_DIR . $typeURI . $file);
+                }
             }
         }
 
         //load remaining child files
         if (isset($childFiles) && $childFiles !== $parentFiles) {
             foreach ($childFiles as $file) {
-                require_once(THEME_CHILD_DIR . $typeURI . $file);
+                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                    require_once(THEME_CHILD_DIR . $typeURI . $file);
+                }
             }
         }
 
