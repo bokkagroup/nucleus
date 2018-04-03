@@ -58,6 +58,7 @@ class Nucleus {
      */
     public function createModelResources()
     {
+        //TODO: Refactor to use loadFiles function below
         if (file_exists(THEME_CHILD_DIR . '/models')) {
             $dir = new \DirectoryIterator(THEME_CHILD_DIR . '/models');
             foreach ($dir as $file) {
@@ -70,12 +71,9 @@ class Nucleus {
                     $namespace = "CatalystWP\Atom\models\\";
                     $class = $namespace . $class_name[0];
 
-                    if (class_exists($class)) {
-                        $model = new $class();
-
-                        if (isset($model->resource) && $model->resource) {
-                            $service = new Resource($model);
-                        }
+                    if (class_exists($class) && property_exists($class, 'resource')) {
+                        $vars = get_class_vars($class);
+                        Resource::registerPostType($class, $vars['resource']);
                     }
                 }
             }

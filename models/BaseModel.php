@@ -6,18 +6,6 @@ Class Model
 {
     public $data = array();
 
-    /**
-     * Return the model class name without namespace
-     * @return [string] Model name
-     */
-    public function getModelName()
-    {
-        $modelClass = static::class;
-        $className = explode('\\', $modelClass);
-
-        return end($className);
-    }
-
     public function __construct($options = array())
     {
         $this->options = $options;

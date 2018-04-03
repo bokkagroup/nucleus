@@ -4,18 +4,35 @@ namespace CatalystWP\Nucleus;
 
 Class Resource
 {
-    private $model;
-
-    public function __construct($model)
+    public static function registerPostType($model, $resource = array())
     {
-        $this->model = $model;
+        //TODO: Have default options w/ability to override
+        $defaultLabels = array();
 
-        $this->registerPostType();
-    }
+        $defaultArgs = array(
+            'label'                 => __( 'Post Type', 'text_domain' ),
+            'description'           => __( 'Post Type Description', 'text_domain' ),
+            'labels'                => $resource['labels'],
+            'supports'              => array('title', 'editor'),
+            'taxonomies'            => array(),
+            'hierarchical'          => false,
+            'public'                => true,
+            'show_ui'               => true,
+            'show_in_menu'          => true,
+            'menu_position'         => 5,
+            'show_in_admin_bar'     => true,
+            'show_in_nav_menus'     => true,
+            'can_export'            => true,
+            'has_archive'           => true,
+            'exclude_from_search'   => false,
+            'publicly_queryable'    => true,
+            'capability_type'       => 'page',
+        );
 
-    private function registerPostType()
-    {
-        $classSlug = strtolower($this->model->getModelName());
+        // Merge default options with user provided options
+
+        $className = explode('\\', $model);
+        $classSlug = end($className);
 
         if (post_type_exists($classSlug)) {
             return;
@@ -48,7 +65,7 @@ Class Resource
         $args = array(
             'label'                 => __( 'Post Type', 'text_domain' ),
             'description'           => __( 'Post Type Description', 'text_domain' ),
-            'labels'                => $this->model->labels,
+            'labels'                => $resource['labels'],
             'supports'              => array('title'),
             'taxonomies'            => array(),
             'hierarchical'          => false,
@@ -59,7 +76,7 @@ Class Resource
             'show_in_admin_bar'     => true,
             'show_in_nav_menus'     => true,
             'can_export'            => true,
-            'has_archive'           => $this->model->resourceOptions['has_archive'],
+            'has_archive'           => $resource['options']['has_archive'],
             'exclude_from_search'   => false,
             'publicly_queryable'    => true,
             'capability_type'       => 'page',
