@@ -3,6 +3,11 @@
 namespace CatalystWP\Nucleus;
 
 Class View {
+    /**
+     * Which template to use
+     * @var string
+     */
+    private $viewType;
 
     /**
      * Generates html from mustache template
@@ -14,14 +19,25 @@ Class View {
     {
         global $Handlebars;
 
-        if(!$template && isset($this->template)) {
+        if (!$template && isset($this->template)) {
             $template = $this->template;
         }
+
         if (isset($template)) {
             apply_filters('catatlystwp_nucleus_filter_before_render', $data);
-            $template = $Handlebars->render($template, $data);
+
+            if (is_array($template)) {
+                if (isset($template['overview']) && $this->viewType === 'overview') {
+                    $template = $Handlebars->render($template['overview'], $data);
+                } else if (isset($template['detail']) && $this->viewType === 'detail') {
+                    $template = $Handlebars->render($template['detail'], $data);
+                }
+            } else {
+                $template = $Handlebars->render($template, $data);
+            }
         }
-       return $template;
+
+        return $template;
     }
 
     /**
@@ -30,18 +46,22 @@ Class View {
      */
     public function display($data = array())
     {
-        if (isset($this->template)) {
-            echo $this->render(array('BOKKA' => array('env_local' => false)), 'head');
-            do_action('catatlystwp_nucleus_before_display', $data);
-            echo $this->render($data);
-            do_action('catatlystwp_nucleus_after_display', $data);
-            echo $this->render(array('BOKKA' => array('env_local' => false)), 'foot');
+        if (!isset($this->template)) {
+            error_log('catatlystwp_nucleus Error: '. __('Template not defined in view.', 'CATALYST_WP_NUCLEUS'));
+            return;
         }
 
-        return;
+        echo $this->render(array('BOKKA' => array('env_local' => false)), 'head');
+        do_action('catatlystwp_nucleus_before_display', $data);
+        echo $this->render($data);
+        do_action('catatlystwp_nucleus_after_display', $data);
+        echo $this->render(array('BOKKA' => array('env_local' => false)), 'foot');
     }
 
-    public function __construct(){
+    public function __construct($viewType)
+    {
+        $this->viewType = $viewType;
+
         $this->initialize();
     }
 }

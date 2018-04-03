@@ -10,6 +10,8 @@ Author URI: http://bokkagroup.com
 
 namespace CatalystWP;
 
+use CatalystWP\Nucleus\Resource as Resource;
+
 /**
  * CatalystWP
  * @version 0.0.1 Singleton
@@ -27,6 +29,8 @@ class Nucleus {
 
         $this->loadHandlebars();
 
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Resource.php');
+
         //load base classes
         //controllers
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'controllers/BaseController.php');
@@ -41,10 +45,43 @@ class Nucleus {
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
+        //create necessary resources for models
+        add_action('init', array($this, 'createModelResources'));
 
         //auto load controllers
         add_action('init', array($this, 'autoLoad'));
+    }
+
+    /**
+     * Create resources (such as custom post types) for models at WP init
+     * @return void
+     */
+    public function createModelResources()
+    {
+        if (file_exists(THEME_CHILD_DIR . '/models')) {
+            $dir = new \DirectoryIterator(THEME_CHILD_DIR . '/models');
+            foreach ($dir as $file) {
+                if (!$file->isDot() && $file->isFile()) {
+                    $filename = $file->getFilename();
+                    $class_name = explode('.', $filename);
+                    require_once(THEME_CHILD_DIR . '/models/' . $filename);
+
+                    //TODO: Make theme namespace dynamic
+                    $namespace = "CatalystWP\Atom\models\\";
+                    $class = $namespace . $class_name[0];
+
+                    if (class_exists($class)) {
+                        $model = new $class();
+
+                        if (isset($model->resource) && $model->resource) {
+                            $service = new Resource($model);
+                        }
+                    }
+                }
+            }
+        }
+
+        return;
     }
 
     private function loadHandlebars()
