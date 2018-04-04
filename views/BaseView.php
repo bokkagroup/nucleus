@@ -31,6 +31,9 @@ Class View {
                     $template = $Handlebars->render($template['overview'], $data);
                 } else if (isset($template['detail']) && $this->viewType === 'detail') {
                     $template = $Handlebars->render($template['detail'], $data);
+                } else {
+                    error_log('catatlystwp_nucleus Error: '. __('Missing overview or detail template in view.', 'CATALYST_WP_NUCLEUS'));
+                    return;
                 }
             } else {
                 $template = $Handlebars->render($template, $data);
@@ -58,7 +61,7 @@ Class View {
         echo $this->render(array('BOKKA' => array('env_local' => false)), 'foot');
     }
 
-    public function __construct($viewType)
+    public function __construct($viewType = false)
     {
         $this->viewType = $viewType;
 
