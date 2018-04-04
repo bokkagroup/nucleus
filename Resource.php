@@ -7,6 +7,7 @@ Class Resource
     public static function registerPostType($model, $resource = array())
     {
         //TODO: Have default options w/ability to override
+
         $defaultLabels = array();
 
         $defaultArgs = array(
@@ -29,12 +30,9 @@ Class Resource
             'capability_type'       => 'page',
         );
 
-        // Merge default options with user provided options
+        $slug = getModelSlug($model);
 
-        $className = explode('\\', $model);
-        $classSlug = end($className);
-
-        if (post_type_exists($classSlug)) {
+        if (post_type_exists($slug)) {
             return;
         }
 
@@ -82,6 +80,6 @@ Class Resource
             'capability_type'       => 'page',
         );
 
-        register_post_type( $classSlug, $args );
+        register_post_type( $slug, $args );
     }
 }

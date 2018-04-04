@@ -30,6 +30,7 @@ class Nucleus {
         $this->loadHandlebars();
 
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Resource.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'helpers/models.php');
 
         //load base classes
         //controllers
