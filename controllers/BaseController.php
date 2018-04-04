@@ -19,7 +19,6 @@ Class Controller {
         }
 
         return false;
-
     }
 
     public function loadView($viewType)
@@ -42,16 +41,26 @@ Class Controller {
 
         $this->model = $this->loadModel();
 
+        if (property_exists($this->model, 'resource') && $this->model::$resource) {
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Service.php');
+            $service = new Service(get_class($this->model));
+        }
+
         if (is_archive()) {
+            $data['posts'] = $service->getAll();
             $this->view = $this->loadView('overview');
         } else if (is_singular()) {
+            $data = $service->get();
             $this->view = $this->loadView('detail');
+        } else {
+            $data = $this->model->data;
+            $this->view = $this->loadView();
         }
 
         if (isset($options['json']) && $options['json']) {
             $this->json = $options['json'];
         }
 
-        $this->initialize();
+        $this->initialize($data);
     }
 }
