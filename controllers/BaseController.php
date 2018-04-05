@@ -21,7 +21,7 @@ Class Controller {
         return false;
     }
 
-    public function loadView($viewType)
+    public function loadView($viewType = false)
     {
         //parse view class name
         $nameSpace = explode('\\', get_class($this));
@@ -41,16 +41,20 @@ Class Controller {
 
         $this->model = $this->loadModel();
 
+        // instantiate new service for resource
         if (property_exists($this->model, 'resource') && $this->model::$resource) {
             require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Service.php');
             $service = new Service(get_class($this->model));
         }
 
-        if (is_archive()) {
+        // get data and load view
+        if (isset($service) && is_archive()) {
             $data['posts'] = $service->getAll();
+            $data['pagination'] = $service->getPagination();
             $this->view = $this->loadView('overview');
-        } else if (is_singular()) {
-            $data = $service->get();
+        } else if (isset($service) && is_singular()) {
+            global $post;
+            $data = $service->get($post->ID);
             $this->view = $this->loadView('detail');
         } else {
             $data = $this->model->data;

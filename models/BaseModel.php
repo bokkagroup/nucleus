@@ -25,7 +25,7 @@ Class Model
     }
 
     /**
-     * Take properties from $data and assign to primary model instance
+     * Take properties from $data and re-assign to primary model instance
      * @param  array  $data Data to attach to instance
      * @return void
      */

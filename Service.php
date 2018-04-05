@@ -6,6 +6,9 @@ Class Service
 {
     private $modelClass;
     private $postType;
+    private $queryArgs;
+    private $query;
+    private $paged;
 
     public function __construct($modelClass)
     {
@@ -16,6 +19,12 @@ Class Service
 
         $this->modelClass = $modelClass;
         $this->postType = getModelSlug($this->modelClass);
+        $this->paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+
+        // set custom query args
+        if (isset($this->modelClass::$resource['query'])) {
+            $this->queryArgs = $modelClass::$resource['query'];
+        }
     }
 
     /**
@@ -25,15 +34,21 @@ Class Service
      */
     public function get($id = false)
     {
-        global $post;
+        if (!$id) {
+            return;
+        }
 
-        $id = $id || $post->ID;
+        $args = array(
+            'p' => $id
+        );
 
-        $post = $this->queryPosts(array(
-            'posts_per_page' => 1
-        ));
+        $instance = $this->queryPosts($args);
 
-        return $post;
+        if (isset($instance[0])) {
+            return $instance[0];
+        }
+
+        return;
     }
 
     /**
@@ -42,11 +57,36 @@ Class Service
      */
     public function getAll()
     {
-        $posts = $this->queryPosts(array(
-            'posts_per_page' => 500
+        $args = array(
+            'posts_per_page' => 500,
+            'paged' => $this->paged
+        );
+
+        if (isset($this->queryArgs)) {
+            $args = array_merge($args, $this->queryArgs);
+        }
+
+        $collection = $this->queryPosts($args);
+
+        if (count($collection) > 0) {
+            return $collection;
+        }
+
+        return;
+    }
+
+    /**
+     * Get pagination markup
+     * @return string   WP generated pagination markup
+     */
+    public function getPagination()
+    {
+        $pagination = paginate_links(array(
+            'current' => max(1, $this->paged),
+            'total' => $this->query->max_num_pages
         ));
 
-        return $posts;
+        return $pagination;
     }
 
     /**
@@ -62,20 +102,25 @@ Class Service
         $defaultArgs = array(
             'post_type' => $this->postType
         );
-
         $args = array_merge($defaultArgs, $args);
 
-        $result = new \WP_Query($args);
+        $this->query = new \WP_Query($args);
+        $posts = $this->query->get_posts();
 
         $results = array_map(function ($post) {
             $post = $this->attachACFFields($post);
             $instance = new $this->modelClass(false, $post);
             return $instance;
-        }, $result->posts);
+        }, $posts);
 
         return $results;
     }
 
+    /**
+     * Checks to see if there are associated ACF fields and creates members for them
+     * @param  $post
+     * @return $post
+     */
     private function attachACFFields($post)
     {
         $fields = get_fields($post->ID);
