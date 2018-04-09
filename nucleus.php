@@ -25,26 +25,28 @@ class Nucleus {
         define("THEME_PARENT_DIR", get_template_directory());
         define("THEME_CHILD_DIR", get_stylesheet_directory());
 
-        $this->loadHandlebars();
+        if (!is_admin()) {
+            $this->loadHandlebars();
 
-        //load base classes
-        //controllers
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'controllers/BaseController.php');
+            //load base classes
+            //controllers
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'controllers/BaseController.php');
 
-        //views
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/BaseView.php');
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/HeadView.php');
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/FootView.php');
+            //views
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/BaseView.php');
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/HeadView.php');
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'views/FootView.php');
 
-        //models
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/BaseModel.php');
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
+            //models
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/BaseModel.php');
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
+            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
+            //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
 
-        //auto load controllers
-        add_action('init', array($this, 'autoLoad'));
+            //auto load controllers
+            add_action('init', array($this, 'autoLoad'));
+        }
     }
 
     private function loadHandlebars()
