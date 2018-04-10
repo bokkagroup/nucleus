@@ -2,9 +2,7 @@
 
 namespace CatalystWP\Nucleus;
 
-require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'helpers/Inflector.php');
-
-use Cake\Utility\Inflector as Inflector;
+use ICanBoogie\Inflector as Inflector;
 
 Class Resource
 {
@@ -19,7 +17,8 @@ Class Resource
         $namespace = explode('\\', $model);
         $modelName = end($namespace);
 
-        $plural = Inflector::pluralize($modelName);
+        $inflector = Inflector::get(Inflector::DEFAULT_LOCALE);
+        $plural = $inflector->pluralize($modelName);
 
         $labels = array(
             // User-defined or auto-generated
