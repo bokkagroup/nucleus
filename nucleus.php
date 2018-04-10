@@ -10,6 +10,8 @@ Author URI: http://bokkagroup.com
 
 namespace CatalystWP;
 
+use CatalystWP\Nucleus\Resource as Resource;
+
 /**
  * CatalystWP
  * @version 0.0.1 Singleton
@@ -27,6 +29,9 @@ class Nucleus {
 
         $this->loadHandlebars();
 
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Resource.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'helpers/models.php');
+
         //load base classes
         //controllers
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'controllers/BaseController.php');
@@ -41,10 +46,36 @@ class Nucleus {
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
+        //create necessary resources for models
+        add_action('init', array($this, 'createModelResources'));
 
         //auto load controllers
         add_action('init', array($this, 'autoLoad'));
+    }
+
+    /**
+     * Create resources (such as custom post types) for models at WP init
+     * @return void
+     */
+    public function createModelResources()
+    {
+        self::loadFiles('models');
+
+        $classes = get_declared_classes();
+        array_filter($classes, function ($class) {
+            if (strpos($class, 'CatalystWP\Atom\models') === false) {
+                return;
+            }
+
+            if (property_exists($class, 'resource')) {
+                $vars = get_class_vars($class);
+                Resource::registerPostType($class, $vars['resource']);
+            }
+
+            return $class;
+        });
+
+        return;
     }
 
     private function loadHandlebars()
@@ -143,11 +174,11 @@ class Nucleus {
 
         //get some arrays of our filenames
         if (file_exists(THEME_PARENT_DIR . $typeURI))
-            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..') );
+            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..'));
 
 
         if (file_exists(THEME_CHILD_DIR . $typeURI))
-            $childFiles =  array_diff( scandir( THEME_CHILD_DIR . $typeURI ), array('.', '..') );
+            $childFiles = array_diff(scandir(THEME_CHILD_DIR . $typeURI ), array('.', '..'));
 
 
         //get the diff and remove dupes from parent (child overrides parent)
@@ -157,14 +188,18 @@ class Nucleus {
         //load remaining parent files
         if (isset($parentFiles)) {
             foreach ($parentFiles as $file) {
-                require_once( THEME_PARENT_DIR . $typeURI . $file);
+                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                    require_once(THEME_PARENT_DIR . $typeURI . $file);
+                }
             }
         }
 
         //load remaining child files
         if (isset($childFiles) && $childFiles !== $parentFiles) {
             foreach ($childFiles as $file) {
-                require_once(THEME_CHILD_DIR . $typeURI . $file);
+                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                    require_once(THEME_CHILD_DIR . $typeURI . $file);
+                }
             }
         }
 
