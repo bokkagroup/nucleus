@@ -188,7 +188,7 @@ class Nucleus {
         //load remaining parent files
         if (isset($parentFiles)) {
             foreach ($parentFiles as $file) {
-                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                if (!is_dir(THEME_PARENT_DIR . $typeURI . $file)) {
                     require_once(THEME_PARENT_DIR . $typeURI . $file);
                 }
             }
