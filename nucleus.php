@@ -63,7 +63,7 @@ class Nucleus {
 
         $classes = get_declared_classes();
         array_filter($classes, function ($class) {
-            if (strpos($class, 'CatalystWP\Atom\models') === false) {
+            if (strpos($class, 'CatalystWP\Atom') === false) {
                 return;
             }
 
@@ -173,17 +173,18 @@ class Nucleus {
         }
 
         //get some arrays of our filenames
-        if (file_exists(THEME_PARENT_DIR . $typeURI))
+        if (file_exists(THEME_PARENT_DIR . $typeURI)) {
             $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..'));
+        }
 
-
-        if (file_exists(THEME_CHILD_DIR . $typeURI))
+        if (file_exists(THEME_CHILD_DIR . $typeURI)) {
             $childFiles = array_diff(scandir(THEME_CHILD_DIR . $typeURI ), array('.', '..'));
-
+        }
 
         //get the diff and remove dupes from parent (child overrides parent)
-        if (isset($parentFiles) && isset($childFiles))
+        if (isset($parentFiles) && isset($childFiles)) {
             $parentFiles = array_diff($parentFiles, $childFiles);
+        }
 
         //load remaining parent files
         if (isset($parentFiles)) {
