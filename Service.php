@@ -22,7 +22,7 @@ Class Service
         $this->paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
 
         // set custom query args
-        if (isset($this->modelClass::$resource['query'])) {
+        if (property_exists($this->modelClass, 'resource') && isset($this->modelClass::$resource['query'])) {
             $this->queryArgs = $modelClass::$resource['query'];
         }
     }
@@ -108,7 +108,6 @@ Class Service
         $posts = $this->query->get_posts();
 
         $results = array_map(function ($post) {
-            $post = $this->attachACFFields($post);
             $instance = new $this->modelClass(false, $post);
             return $instance;
         }, $posts);
@@ -121,8 +120,12 @@ Class Service
      * @param  $post
      * @return $post
      */
-    private function attachACFFields($post)
+    public function attachACFFields($post)
     {
+        if (!isset($post->ID)) {
+            return;
+        }
+
         $fields = get_fields($post->ID);
 
         if (!empty($fields)) {

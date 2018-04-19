@@ -2,9 +2,12 @@
 
 namespace CatalystWP\Nucleus;
 
+require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Service.php');
+
 Class Model
 {
     public $data = array();
+    public $service;
 
     /**
      * Filter out properties of WP_Post not in $allowed
@@ -45,6 +48,16 @@ Class Model
         if (isset($this->options['parent_blog'])) {
             switch_to_blog($this->options['parent_blog']);
         }
+
+        $this->service = new Service(get_class($this));
+
+        if (is_numeric($data)) {
+            $data = get_post($data);
+        }
+
+        // TODO: Attach ACF data after filtering so we don't have to explicitly
+        // include all custom fields in our model
+        $data = $this->service->attachACFFields($data);
 
         if (($data) && (property_exists($this, 'allowed') && $this::$allowed)) {
             $data = $this->filterProperites($this::$allowed, $data);

@@ -37,24 +37,19 @@ Class Controller {
 
     public function __construct($options = array())
     {
+        global $post;
+
         $this->options = $options;
 
         $this->model = $this->loadModel();
 
-        // instantiate new service for resource
-        if (property_exists($this->model, 'resource') && $this->model::$resource) {
-            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Service.php');
-            $service = new Service(get_class($this->model));
-        }
-
         // get data and load view
-        if (isset($service) && is_archive()) {
-            $data['posts'] = $service->getAll();
-            $data['pagination'] = $service->getPagination();
+        if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {
+            $data['posts'] = $this->model->service->getAll();
+            $data['pagination'] = $this->model->service->getPagination();
             $this->view = $this->loadView('overview');
-        } else if (isset($service) && is_singular()) {
-            global $post;
-            $data = $service->get($post->ID);
+        } else if (property_exists($this->model, 'resource') && $this->model::$resource && is_singular()) {
+            $data = $this->model->service->get($post->ID);
             $this->view = $this->loadView('detail');
         } else {
             $data = $this->model->data;
