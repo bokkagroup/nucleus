@@ -18,27 +18,29 @@ Class Resource
         $modelName = end($namespace);
 
         $inflector = Inflector::get(Inflector::DEFAULT_LOCALE);
-        $plural = $inflector->pluralize($modelName);
+        $singular = $inflector->titleize($modelName);
+        $plural = $inflector->titleize($modelName);
+        $plural = $inflector->pluralize($plural);
 
         $labels = array(
             // User-defined or auto-generated
             'name'                  => _x( "${plural}", 'Post Type General Name', 'text_domain' ),
-            'singular_name'         => _x( "${modelName}", 'Post Type Singular Name', 'text_domain' ),
+            'singular_name'         => _x( "${singular}", 'Post Type Singular Name', 'text_domain' ),
             'menu_name'             => __( "${plural}", 'text_domain' ),
-            'name_admin_bar'        => __( "${modelName}", 'text_domain' ),
+            'name_admin_bar'        => __( "${singular}", 'text_domain' ),
 
             // Generic labels
-            'archives'              => __( 'Item Archives', 'text_domain' ),
-            'attributes'            => __( 'Item Attributes', 'text_domain' ),
+            'archives'              => __( "${singular} Archives", 'text_domain' ),
+            'attributes'            => __( "${singular} Attributes", 'text_domain' ),
             'parent_item_colon'     => __( 'Parent Item:', 'text_domain' ),
-            'all_items'             => __( 'All Items', 'text_domain' ),
-            'add_new_item'          => __( 'Add New Item', 'text_domain' ),
+            'all_items'             => __( "All ${plural}", 'text_domain' ),
+            'add_new_item'          => __( "Add New ${singular}", 'text_domain' ),
             'add_new'               => __( 'Add New', 'text_domain' ),
-            'new_item'              => __( 'New Item', 'text_domain' ),
-            'edit_item'             => __( 'Edit Item', 'text_domain' ),
-            'update_item'           => __( 'Update Item', 'text_domain' ),
-            'view_item'             => __( 'View Item', 'text_domain' ),
-            'view_items'            => __( 'View Items', 'text_domain' ),
+            'new_item'              => __( "New ${singular}", 'text_domain' ),
+            'edit_item'             => __( "Edit ${singular}", 'text_domain' ),
+            'update_item'           => __( "Update ${singular}", 'text_domain' ),
+            'view_item'             => __( "View ${singular}", 'text_domain' ),
+            'view_items'            => __( "View ${plural}", 'text_domain' ),
             'search_items'          => __( 'Search Item', 'text_domain' ),
             'insert_into_item'      => __( 'Insert into item', 'text_domain' ),
             'uploaded_to_this_item' => __( 'Uploaded to this item', 'text_domain' ),
