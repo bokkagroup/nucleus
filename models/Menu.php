@@ -111,10 +111,9 @@ Class Menu
             // If a $post has been provided when the menu is initalized
             // then filter out items that don't match the provided post,
             // or are a child of the post.
-            if ($current_item_id && ((int)$menu_item_parent === $current_item_id) || ($item->ID === $current_item_id)) {
-                // proceed
-            } elseif (!$current_item_id) {
-                // proceed
+            if (($current_item_id && $current_item_id == $menu_item_parent || $current_item_id == $item->ID) ||
+                !$current_item_id) {
+                // proceed as normal
             } else {
                 continue;
             }
