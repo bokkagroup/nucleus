@@ -52,7 +52,7 @@ Class Controller {
             $data = $this->model->service->get($post->ID);
             $this->view = $this->loadView('detail');
         } else {
-            $data = $this->model->data;
+            $data = $this->model;
             $this->view = $this->loadView();
         }
 

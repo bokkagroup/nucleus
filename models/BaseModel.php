@@ -53,6 +53,9 @@ Class Model
 
         if (is_numeric($data)) {
             $data = get_post($data);
+        } elseif (!$data) {
+            global $post;
+            $data = $post;
         }
 
         // TODO: Attach ACF data after filtering so we don't have to explicitly
@@ -68,7 +71,9 @@ Class Model
             unset($this->data);
         }
 
-        $this->initialize($data);
+        if (method_exists($this, 'initialize')) {
+            $this->initialize();
+        }
 
         if (isset($this->options['parent_blog'])) {
             restore_current_blog();
