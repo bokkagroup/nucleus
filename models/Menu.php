@@ -38,30 +38,66 @@ Class Menu
     public $links;
 
     /**
-     * WP_Term Object
-     * @var object
-     */
-    public $wp_menu;
-
-    /**
      * Setup new instance of Menu class
      * @param string $name WordPress menu name, e.g. 'primary' or 'footer'
+     * @param object $post WP_Post object
+     *
+     * Note: This is the name when the menu is created in the admin, not the
+     * name of the menu registered in WordPress
      */
-    public function __construct($name) {
-        $this->wp_menu = wp_get_nav_menu_object($name);
-        $this->links = Menu::setMenuItems();
+    public function __construct($options = array()) {
+        $post = false;
+
+        if (!isset($options['name'])) {
+            return;
+        }
+
+        $wp_menu = wp_get_nav_menu_object($options['name']);
+
+        if (!is_a($wp_menu, 'WP_Term')) {
+            return;
+        }
+
+        $menu_items = wp_get_nav_menu_items($wp_menu->term_id, array('order' => 'DESC'));
+
+        if ((isset($options['post']) && is_a($options['post'], 'WP_Post'))) {
+            $post = $options['post'];
+        }
+
+        $current_item_id = $this->getCurrentItemID($menu_items, $post);
+
+        $this->links = $this->setMenuLinks($menu_items, $current_item_id);
+    }
+
+    /**
+     * Checks each menu item title against the provided $post title
+     * and returns a matching menu item ID if found.
+     * Used to retrieve menu links for a specified post.
+     *
+     * @param  [type] $menu_items [description]
+     * @param  [type] $post       [description]
+     * @return [type]             [description]
+     */
+    protected function getCurrentItemID($menu_items, $post)
+    {
+        foreach ($menu_items as $item) {
+            if ($post && strtolower($post->post_title) == strtolower($item->title)) {
+                return $item->ID;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Setup array of menu links
      */
-    protected function setMenuItems()
+    protected function setMenuLinks($menu_items, $current_item_id)
     {
-        if (!is_a($this->wp_menu, 'WP_Term')) {
+        if (!$menu_items || count($menu_items) < 1) {
             return;
         }
 
-        $menu_items = wp_get_nav_menu_items($this->wp_menu->term_id, array('order' => 'DESC'));
         $menu_object = array();
 
         foreach ($menu_items as $item) {
@@ -69,6 +105,18 @@ Class Menu
             $menu_item['link'] = $item->url;
             $menu_item['title'] = $item->title;
             $menu_item['slug'] = get_post_field('post_name', $item->object_id);
+
+            $menu_item_parent = trim($item->menu_item_parent);
+
+            // If a $post has been provided when the menu is initalized
+            // then filter out items that don't match the provided post,
+            // or are a child of the post.
+            if (($current_item_id && $current_item_id == $menu_item_parent || $current_item_id == $item->ID) ||
+                !$current_item_id) {
+                // proceed as normal
+            } else {
+                continue;
+            }
 
             if (!empty($item->classes) && !empty($item->classes[0])) {
                 $menu_item['classes'] = $item->classes;
