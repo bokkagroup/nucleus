@@ -7,7 +7,7 @@ Class Controller {
      * Loads and instantiates model
      * @return [type] [description]
      */
-    public function loadModel()
+    public function loadModel($post)
     {
         //parse model class name
         $nameSpace = explode('\\', get_class($this));
@@ -15,7 +15,7 @@ Class Controller {
 
         //instantiate the model
         if (class_exists($modelClass)) {
-            return new $modelClass($this->options);
+            return new $modelClass($this->options, $post);
         }
 
         return false;
@@ -41,7 +41,7 @@ Class Controller {
 
         $this->options = $options;
 
-        $this->model = $this->loadModel();
+        $this->model = $this->loadModel($post);
 
         // get data and load view
         if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {

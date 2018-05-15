@@ -53,9 +53,6 @@ Class Model
 
         if (is_numeric($data)) {
             $data = get_post($data);
-        } elseif (!$data) {
-            global $post;
-            $data = $post;
         }
 
         // TODO: Attach ACF data after filtering so we don't have to explicitly
