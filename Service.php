@@ -108,7 +108,7 @@ Class Service
         $posts = $this->query->get_posts();
 
         $results = array_map(function ($post) {
-            $instance = new $this->modelClass(false, $post);
+            $instance = new $this->modelClass(['post_id' => $post->ID]);
             return $instance;
         }, $posts);
 

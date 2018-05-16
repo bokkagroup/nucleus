@@ -9,6 +9,12 @@ Class View {
      */
     private $viewType;
 
+    public function __construct($viewType = false)
+    {
+        $this->viewType = $viewType;
+        $this->initialize();
+    }
+
     /**
      * Generates html from mustache template
      * @param bool $template
@@ -59,12 +65,5 @@ Class View {
         echo $this->render($data);
         do_action('catatlystwp_nucleus_after_display', $data);
         echo $this->render(array('BOKKA' => array('env_local' => false)), 'foot');
-    }
-
-    public function __construct($viewType = false)
-    {
-        $this->viewType = $viewType;
-
-        $this->initialize();
     }
 }

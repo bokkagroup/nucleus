@@ -3,11 +3,45 @@
 namespace CatalystWP\Nucleus;
 
 Class Controller {
+    public $options;
+
+    public function __construct($options = array())
+    {
+        $postID = false;
+
+        $this->options = $options;
+
+        if (isset($options['post_id']) && $options['post_id']) {
+            $postID = $options['post_id'];
+        }
+
+        $this->model = $this->loadModel();
+
+        // get data and load view
+        if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {
+            $data['posts'] = $this->model->service->getAll();
+            $data['pagination'] = $this->model->service->getPagination();
+            $this->view = $this->loadView('overview');
+        } else if (property_exists($this->model, 'resource') && $this->model::$resource && is_singular()) {
+            $data = $this->model->service->get($postID);
+            $this->view = $this->loadView('detail');
+        } else {
+            $data = $this->model;
+            $this->view = $this->loadView();
+        }
+
+        if (isset($options['json']) && $options['json']) {
+            $this->json = $options['json'];
+        }
+
+        $this->initialize($data);
+    }
+
     /**
      * Loads and instantiates model
      * @return [type] [description]
      */
-    public function loadModel($post)
+    public function loadModel()
     {
         //parse model class name
         $nameSpace = explode('\\', get_class($this));
@@ -15,7 +49,7 @@ Class Controller {
 
         //instantiate the model
         if (class_exists($modelClass)) {
-            return new $modelClass($this->options, $post);
+            return new $modelClass($this->options);
         }
 
         return false;
@@ -33,33 +67,5 @@ Class Controller {
         }
 
         return false;
-    }
-
-    public function __construct($options = array())
-    {
-        global $post;
-
-        $this->options = $options;
-
-        $this->model = $this->loadModel($post);
-
-        // get data and load view
-        if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {
-            $data['posts'] = $this->model->service->getAll();
-            $data['pagination'] = $this->model->service->getPagination();
-            $this->view = $this->loadView('overview');
-        } else if (property_exists($this->model, 'resource') && $this->model::$resource && is_singular()) {
-            $data = $this->model->service->get($post->ID);
-            $this->view = $this->loadView('detail');
-        } else {
-            $data = $this->model;
-            $this->view = $this->loadView();
-        }
-
-        if (isset($options['json']) && $options['json']) {
-            $this->json = $options['json'];
-        }
-
-        $this->initialize($data);
     }
 }
