@@ -60,8 +60,10 @@ Class Menu
 
         $menu_items = wp_get_nav_menu_items($wp_menu->term_id, array('order' => 'DESC'));
 
-        if ((isset($options['post']) && is_a($options['post'], 'WP_Post'))) {
+        if (isset($options['post']) && is_a($options['post'], 'WP_Post')) {
             $post = $options['post'];
+        } elseif (isset($options['post']) && is_numeric($options['post'])) {
+            $post = get_post($options['post']);
         }
 
         $current_item_id = $this->getCurrentItemID($menu_items, $post);
