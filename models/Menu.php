@@ -61,6 +61,8 @@ Class Menu
      */
     protected function setMenuItems()
     {
+        global $post;
+
         if (!is_a($this->wp_menu, 'WP_Term')) {
             return;
         }
@@ -78,8 +80,13 @@ Class Menu
                 $menu_item['classes'] = $item->classes;
             }
 
+            // Add class for current active page
+            if (isset($post->ID) && ($post->ID == $item->object_id)) {
+                $menu_item['classes'][] = 'current-page';
+            }
+
             if (!$item->menu_item_parent) {
-                $menu_item['parent'] = true;
+                $menu_item['parent'] = false;
                 $menu_object[$item->ID] = $menu_item;
             } else {
                 $menu_item['child'] = true;
