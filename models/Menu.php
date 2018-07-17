@@ -54,6 +54,7 @@ Class Menu
 
         $this->wp_menu = wp_get_nav_menu_object($options['name']);
         $this->links = Menu::setMenuItems();
+        $this->updateMenuItems(array($this, 'setAttributes'));
     }
 
     /**
@@ -74,6 +75,7 @@ Class Menu
             $menu_item = array();
             $menu_item['link'] = $item->url;
             $menu_item['title'] = $item->title;
+            $menu_item['object_id'] = $item->object_id;
             $menu_item['slug'] = get_post_field('post_name', $item->object_id);
 
             if (!empty($item->classes) && !empty($item->classes[0])) {
@@ -117,6 +119,23 @@ Class Menu
         }
 
         return $menu_links;
+    }
+
+    /**
+     * Set additional attributes for menu items
+     */
+    private function setAttributes($menu_item)
+    {
+        // Add 'current-page-parent' class to parent item of current page
+        if (isset($menu_item['child_menu'])) {
+            foreach ($menu_item['child_menu'] as $child_item) {
+                if (isset($child_item['classes']) && in_array('current-page', $child_item['classes'])) {
+                    $menu_item['classes'][] = 'current-page-parent';
+                }
+            }
+        }
+
+        return $menu_item;
     }
 
     /**
