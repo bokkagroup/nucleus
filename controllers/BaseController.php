@@ -21,8 +21,9 @@ Class Controller {
         if ($this->model &&
             property_exists($this->model, 'resource') &&
             $this->model::$resource && is_archive()) {
-            $data['posts'] = $this->model->service->getAll();
-            $data['pagination'] = $this->model->service->getPagination();
+            $data = (isset($postID)) ? get_post($postID) : new \stdClass();
+            $data->posts = $this->model->service->getAll();
+            $data->pagination = $this->model->service->getPagination();
             $this->view = $this->loadView('overview');
         } else if ($this->model &&
             property_exists($this->model, 'resource') &&
