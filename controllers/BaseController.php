@@ -19,8 +19,9 @@ Class Controller {
 
         // get data and load view
         if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {
-            $data['posts'] = $this->model->service->getAll();
-            $data['pagination'] = $this->model->service->getPagination();
+            $data = (isset($postID)) ? get_post($postID) : new \stdClass();
+            $data->posts = $this->model->service->getAll();
+            $data->pagination = $this->model->service->getPagination();
             $this->view = $this->loadView('overview');
         } else if (property_exists($this->model, 'resource') && $this->model::$resource && is_singular()) {
             $data = $this->model->service->get($postID);
