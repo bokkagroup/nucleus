@@ -18,12 +18,16 @@ Class Controller {
         $this->model = $this->loadModel();
 
         // get data and load view
-        if (property_exists($this->model, 'resource') && $this->model::$resource && is_archive()) {
+        if ($this->model &&
+            property_exists($this->model, 'resource') &&
+            $this->model::$resource && is_archive()) {
             $data = (isset($postID)) ? get_post($postID) : new \stdClass();
             $data->posts = $this->model->service->getAll();
             $data->pagination = $this->model->service->getPagination();
             $this->view = $this->loadView('overview');
-        } else if (property_exists($this->model, 'resource') && $this->model::$resource && is_singular()) {
+        } else if ($this->model &&
+            property_exists($this->model, 'resource') &&
+            $this->model::$resource && is_singular()) {
             $data = $this->model->service->get($postID);
             $this->view = $this->loadView('detail');
         } else {
