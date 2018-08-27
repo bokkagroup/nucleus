@@ -30,7 +30,7 @@ Class View {
         }
 
         if (isset($template)) {
-            $data = apply_filters('catatlystwp_nucleus_filter_before_render', $data);
+            apply_filters('catatlystwp_nucleus_filter_before_render', $data);
 
             if (is_array($template)) {
                 if (isset($template['overview']) && $this->viewType === 'overview') {
