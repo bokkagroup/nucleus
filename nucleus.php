@@ -69,7 +69,9 @@ class Nucleus {
 
             if (property_exists($class, 'resource')) {
                 $vars = get_class_vars($class);
-                Resource::registerPostType($class, $vars['resource']);
+                if(!isset($vars['existing_post_type'])) {
+                    Resource::registerPostType($class, $vars['resource']);
+                }
             }
 
             return $class;

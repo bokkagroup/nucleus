@@ -79,6 +79,6 @@ Class Resource
 
         $args['labels'] = $labels;
 
-        register_post_type( $slug, $args );
+        register_post_type($slug, $args);
     }
 }

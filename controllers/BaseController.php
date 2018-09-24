@@ -15,21 +15,22 @@ Class Controller {
             $postID = $options['post_id'];
         }
 
+
         $this->model = $this->loadModel();
 
         // get data and load view
         if ($this->model &&
             property_exists($this->model, 'resource') &&
-            $this->model::$resource && is_archive()) {
-            $data = (isset($postID)) ? get_post($postID) : new \stdClass();
-            $data->posts = $this->model->service->getAll();
-            $data->pagination = $this->model->service->getPagination();
-            $this->view = $this->loadView('overview');
+            $this->model::$resource && (is_archive() || is_home())) {
+                $data = new Model();
+                $data->posts = $this->model->service->getAll();
+                $data->pagination = $this->model->service->getPagination();
+                $this->view = $this->loadView('overview');
         } else if ($this->model &&
             property_exists($this->model, 'resource') &&
             $this->model::$resource && is_singular()) {
-            $data = $this->model->service->get($postID);
-            $this->view = $this->loadView('detail');
+                $data = $this->model->service->get($postID);
+                $this->view = $this->loadView('detail');
         } else {
             $data = $this->model;
             $this->view = $this->loadView();
@@ -39,7 +40,9 @@ Class Controller {
             $this->json = $options['json'];
         }
 
-        $this->initialize($data);
+        if (method_exists($this, 'initialize')) {
+            $this->initialize($data);
+        }
     }
 
     /**

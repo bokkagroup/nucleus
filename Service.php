@@ -13,13 +13,22 @@ Class Service
     public function __construct($modelClass)
     {
         if (!$modelClass || !class_exists($modelClass)) {
-            error_log('catatlystwp_nucleus Error: '. __('Invalid model provided to Service class.', 'CATALYST_WP_NUCLEUS'));
+            error_log('catatlystwp_nucleus Error: ' . __('Invalid model provided to Service class.', 'CATALYST_WP_NUCLEUS'));
             return;
         }
 
+        if(property_exists($modelClass, 'resource')) {
+            $resourceConfig = $modelClass::$resource;
+            $this->postType = isset($resourceConfig['existing_post_type']) ? $resourceConfig['existing_post_type'] : getModelSlug($this->modelClass);
+            $this->paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+        } else {
+            $this->postType = getModelSlug($this->modelClass);
+
+        }
+
+
         $this->modelClass = $modelClass;
-        $this->postType = getModelSlug($this->modelClass);
-        $this->paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+
 
         // set custom query args
         if (property_exists($this->modelClass, 'resource') && isset($this->modelClass::$resource['query'])) {
@@ -57,9 +66,13 @@ Class Service
      */
     public function getAll()
     {
+        global $posts;
+
+
         $args = array(
             'posts_per_page' => 500,
-            'paged' => $this->paged
+            'paged' => $this->paged,
+
         );
 
         if (isset($this->queryArgs)) {
@@ -71,6 +84,7 @@ Class Service
         if (count($collection) > 0) {
             return $collection;
         }
+
 
         return;
     }
@@ -91,10 +105,11 @@ Class Service
 
     /**
      * Query for posts of $this->postType
-     * @param  array  $args WP_Query args
+     * @param  array $args WP_Query args
      * @return array        Array of instances of this model
      */
-    private function queryPosts($args = array()) {
+    private function queryPosts($args = array())
+    {
         if (!$this->postType) {
             return;
         }
@@ -109,6 +124,9 @@ Class Service
 
         $results = array_map(function ($post) {
             $instance = new $this->modelClass(['post_id' => $post->ID]);
+
+            //make sure these are passed through view filters
+            apply_filters('catatlystwp_nucleus_filter_before_render', $instance);
             return $instance;
         }, $posts);
 
