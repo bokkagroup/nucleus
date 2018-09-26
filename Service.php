@@ -17,21 +17,19 @@ Class Service
             return;
         }
 
+        $this->modelClass = $modelClass;
+
         if(property_exists($modelClass, 'resource')) {
             $resourceConfig = $modelClass::$resource;
             $this->postType = isset($resourceConfig['existing_post_type']) ? $resourceConfig['existing_post_type'] : getModelSlug($this->modelClass);
             $this->paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
         } else {
-            $this->postType = getModelSlug($this->modelClass);
+            $this->postType = getModelSlug($modelClass);
 
         }
 
-
-        $this->modelClass = $modelClass;
-
-
         // set custom query args
-        if (property_exists($this->modelClass, 'resource') && isset($this->modelClass::$resource['query'])) {
+        if (property_exists($modelClass, 'resource') && isset($modelClass::$resource['query'])) {
             $this->queryArgs = $modelClass::$resource['query'];
         }
     }
@@ -43,6 +41,7 @@ Class Service
      */
     public function get($id = false)
     {
+
         if (!$id) {
             return;
         }
