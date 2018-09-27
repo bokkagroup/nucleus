@@ -82,12 +82,12 @@ class Nucleus {
 
     private function loadHandlebars()
     {
-        if (!class_exists('Mustache_Autoloader') && !class_exists('Mustache_Engine')) {
-            global $Handlebars;
-            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
-        }
+        global $Handlebars;
+
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
 
         \Handlebars\Autoloader::register();
+
         if (file_exists(THEME_CHILD_DIR)
             && file_exists(THEME_CHILD_DIR . '/templates')) {
             $templateDir = THEME_CHILD_DIR . '/templates';
