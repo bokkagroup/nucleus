@@ -27,7 +27,6 @@ class Nucleus {
         define("THEME_PARENT_DIR", get_template_directory());
         define("THEME_CHILD_DIR", get_stylesheet_directory());
 
-        $this->loadHandlebars();
 
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Resource.php');
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'helpers/models.php');
@@ -99,12 +98,16 @@ class Nucleus {
             return;
         }
 
+
+
         $Handlebars = new \Handlebars\Handlebars(
             array(
                 'loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
                 'partials_loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
             )
         );
+        
+        do_action('nucleus_register_helper',  $Handlebars);
 
         $Handlebars->addHelper('wp_footer', function($options) {
             ob_start();
@@ -153,6 +156,7 @@ class Nucleus {
         self::loadFile('config.php');
         self::loadFiles('helpers');
 
+        $this->loadHandlebars();
         return;
     }
 

@@ -78,6 +78,11 @@ Class Service
             $args = array_merge($args, $this->queryArgs);
         }
 
+        if (is_category()) {
+            $category = get_category( get_query_var( 'cat' ) );
+            $args['cat'] = $category->cat_ID;
+        }
+
         $collection = $this->queryPosts($args);
 
         if (count($collection) > 0) {
