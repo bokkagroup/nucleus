@@ -66,24 +66,27 @@ Class Service
     public function getAll()
     {
         global $posts;
+        global $wp_query;
 
+        //for posts that don't need to be queried
+        if (is_date() || is_category()) {
+            $collection = $wp_query->posts;
+        } else {
+            $args = array(
+                'posts_per_page' => 500,
+                'paged' => $this->paged,
 
-        $args = array(
-            'posts_per_page' => 500,
-            'paged' => $this->paged,
+            );
 
-        );
+            if (isset($this->queryArgs)) {
+                $args = array_merge($args, $this->queryArgs);
+            }
 
-        if (isset($this->queryArgs)) {
-            $args = array_merge($args, $this->queryArgs);
+            $collection = $this->queryPosts($args);
+
         }
 
-        if (is_category()) {
-            $category = get_category( get_query_var( 'cat' ) );
-            $args['cat'] = $category->cat_ID;
-        }
-
-        $collection = $this->queryPosts($args);
+        $collection = $this->applyFilters($collection);
 
         if (count($collection) > 0) {
             return $collection;
@@ -126,13 +129,23 @@ Class Service
         $this->query = new \WP_Query($args);
         $posts = $this->query->get_posts();
 
-        $results = array_map(function ($post) {
-            $instance = new $this->modelClass(['post_id' => $post->ID]);
+        return $posts;
+    }
 
-            //make sure these are passed through view filters
-            apply_filters('catatlystwp_nucleus_filter_before_render', $instance);
-            return $instance;
-        }, $posts);
+    private function applyFilters($array)
+    {
+        $results = array_map(function($item){
+
+            if (isset($item->ID)) {
+
+                $instance = new $this->modelClass(['post_id' => $item->ID]);
+
+                //make sure these are passed through view filters
+                return apply_filters('catatlystwp_nucleus_filter_before_render', $instance);
+            } else {
+                return $item;
+            }
+        }, $array);
 
         return $results;
     }
