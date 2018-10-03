@@ -15,7 +15,6 @@ Class Controller {
             $postID = $options['post_id'];
         }
 
-
         $this->model = $this->loadModel();
 
         // get data and load view
@@ -29,7 +28,8 @@ Class Controller {
         } else if ($this->model &&
             property_exists($this->model, 'resource') &&
             $this->model::$resource && is_singular()) {
-                $data = $this->model->service->get($postID);
+
+                $data = $this->model;
                 $this->view = $this->loadView('detail');
         } else {
             $data = $this->model;
