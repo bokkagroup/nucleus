@@ -18,7 +18,13 @@ Class Model
         }
 
         if (isset($options['post_id']) && $options['post_id'] && is_numeric($options['post_id'])) {
-            $data = get_post($options['post_id']);
+            $post = get_post($options['post_id']);
+
+            if (is_a($post, 'WP_Post')) {
+                $data = get_post($options['post_id']);
+            } else {
+                $data = null;
+            }
         }
 
         $this->service = new Service(get_class($this));
