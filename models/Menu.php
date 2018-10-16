@@ -78,6 +78,10 @@ Class Menu
             $menu_item['object_id'] = $item->object_id;
             $menu_item['slug'] = get_post_field('post_name', $item->object_id);
 
+            if ($menu_item) {
+                $menu_item = apply_filters('nucleus_menu_link_attributes', $menu_item);
+            }
+
             if (!empty($item->classes) && !empty($item->classes[0])) {
                 $menu_item['classes'] = $item->classes;
             }
