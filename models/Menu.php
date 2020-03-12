@@ -47,9 +47,14 @@ Class Menu
      * Setup new instance of Menu class
      * @param string $name WordPress menu name, e.g. 'primary' or 'footer'
      */
-    public function __construct($name) {
-        $this->wp_menu = wp_get_nav_menu_object($name);
+    public function __construct($options = array()) {
+        if (!isset($options['name'])) {
+            return;
+        }
+
+        $this->wp_menu = wp_get_nav_menu_object($options['name']);
         $this->links = Menu::setMenuItems();
+        $this->updateMenuItems(array($this, 'setAttributes'));
     }
 
     /**
@@ -57,6 +62,8 @@ Class Menu
      */
     protected function setMenuItems()
     {
+        global $post;
+
         if (!is_a($this->wp_menu, 'WP_Term')) {
             return;
         }
@@ -68,10 +75,22 @@ Class Menu
             $menu_item = array();
             $menu_item['link'] = $item->url;
             $menu_item['title'] = $item->title;
+            $menu_item['object_id'] = $item->object_id;
             $menu_item['slug'] = get_post_field('post_name', $item->object_id);
+
+            if ($menu_item) {
+                $menu_item = apply_filters('nucleus_menu_link_attributes', $menu_item);
+            }
 
             if (!empty($item->classes) && !empty($item->classes[0])) {
                 $menu_item['classes'] = $item->classes;
+            }
+
+            // Add class for current active page
+
+            if ((isset($post->ID) && ($post->ID == $item->object_id)) ||
+                ($item->type == 'post_type_archive' &&  $item->object === get_post_type())) {
+                $menu_item['classes'][] = 'current-page';
             }
 
             if (!$item->menu_item_parent) {
@@ -106,6 +125,23 @@ Class Menu
         }
 
         return $menu_links;
+    }
+
+    /**
+     * Set additional attributes for menu items
+     */
+    private function setAttributes($menu_item)
+    {
+        // Add 'current-page-parent' class to parent item of current page
+        if (isset($menu_item['child_menu'])) {
+            foreach ($menu_item['child_menu'] as $child_item) {
+                if (isset($child_item['classes']) && in_array('current-page', $child_item['classes'])) {
+                    $menu_item['classes'][] = 'current-page-parent';
+                }
+            }
+        }
+
+        return $menu_item;
     }
 
     /**

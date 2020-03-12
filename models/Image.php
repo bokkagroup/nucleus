@@ -15,7 +15,7 @@ class Image
      *
      * @var int
      */
-    private $post;
+    public $post;
 
     /**
      * Sets up the necessary data for using images in templates

@@ -2,73 +2,84 @@
 
 namespace CatalystWP\Nucleus;
 
+require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Service.php');
+
 Class Model
 {
-    public $data = array();
+    public $service;
 
     public function __construct($options = array())
     {
+        $data = array();
         $this->options = $options;
 
         if (isset($this->options['parent_blog'])) {
             switch_to_blog($this->options['parent_blog']);
         }
 
-        if (class_exists('acf') && isset($this->options['post_id'])) {
-            $this->attachACFFields($this->options['post_id']);
+        if (isset($options['post_id']) && $options['post_id'] && is_numeric($options['post_id'])) {
+            $post = get_post($options['post_id']);
+
+            if (is_a($post, 'WP_Post')) {
+                $data = get_post($options['post_id']);
+            } else {
+                $data = null;
+            }
         }
 
+        $this->service = new Service(get_class($this));
 
-        if (isset($this->options['post_id'])) {
-            $this->import($this->options['post_id']);
+        // TODO: Attach ACF data after filtering so we don't have to explicitly
+        // include all custom fields in our model
+        $data = $this->service->attachACFFields($data);
+
+        if (($data) && (property_exists($this, 'allowed') && $this::$allowed)) {
+            $data = $this->filterProperites($this::$allowed, $data);
         }
 
-        if(method_exists($this, 'initialize')) {
-            $this->initialize();
+        if ($data) {
+            $this->createProperties($data);
+            unset($this->data);
+        }
+
+        if (method_exists($this, 'initialize')) {
+            $this->initialize($options);
         }
 
         if (isset($this->options['parent_blog'])) {
             restore_current_blog();
         }
-
     }
 
     /**
-     * Checks to see if there are associated ACF fields and creates members for them
-     * @param $post_id
-     * @return $this
+     * Filter out properties of WP_Post not in $allowed
+     * @param  array  $allowed Array of allowed properties for model
+     * @return array           Filtered results
      */
-    private function attachACFFields($post_id)
+    public function filterProperites($allowed = array(), $data = array())
     {
+        // convert WP_Post object to array
+        $data = (array) $data;
 
-        if (!isset($post_id)) {
-            global $post;
-            if($post)
-                $post_id = $post->ID;
-        }
+        // remove any non-allowed properties
+        $data = array_filter($data, function ($key) use ($allowed) {
+            return in_array($key, $allowed);
+        }, ARRAY_FILTER_USE_KEY);
 
-        $fields = get_fields($post_id);
-
-        if (!empty($fields)) {
-            foreach ($fields as $field_name => $value) {
-                $this->$field_name = $value;
-            }
-        }
-        return $this;
+        return $data;
     }
 
-    private function import($post_id)
+    /**
+     * Take properties from $data and re-assign to primary model instance
+     * @param  array  $data Data to attach to instance
+     * @return void
+     */
+    public function createProperties($data = array())
     {
-        if (is_int($post_id)) {
-            $post_type = get_post_type($post_id);
-            $post = get_posts(array('post__in' => [$post_id], 'post_type'=> $post_type, 'suppress_filters' => false));
-            if(count($post) > 0)
-                $post = $post[0];
-        } else {
-            $post = $post_id;
+        foreach ($data as $key => $value) {
+            $this->{$key} = $value;
         }
-        foreach (get_object_vars($post) as $key => $value) {
-            $this->$key = $value;
-        }
+
+        return;
     }
 }

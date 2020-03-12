@@ -10,6 +10,8 @@ Author URI: http://bokkagroup.com
 
 namespace CatalystWP;
 
+use CatalystWP\Nucleus\Resource as Resource;
+
 /**
  * CatalystWP
  * @version 0.0.1 Singleton
@@ -25,7 +27,9 @@ class Nucleus {
         define("THEME_PARENT_DIR", get_template_directory());
         define("THEME_CHILD_DIR", get_stylesheet_directory());
 
-        $this->loadHandlebars();
+
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'Resource.php');
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'helpers/models.php');
 
         //load base classes
         //controllers
@@ -41,20 +45,48 @@ class Nucleus {
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Menu.php');
         require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'models/Image.php');
 
-        //require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'autoloader.php');
+        //create necessary resources for models
+        add_action('init', array($this, 'createModelResources'));
 
         //auto load controllers
         add_action('init', array($this, 'autoLoad'));
     }
 
+    /**
+     * Create resources (such as custom post types) for models at WP init
+     * @return void
+     */
+    public function createModelResources()
+    {
+        self::loadFiles('models');
+
+        $classes = get_declared_classes();
+        array_filter($classes, function ($class) {
+            if (strpos($class, 'CatalystWP\Atom') === false) {
+                return;
+            }
+
+            if (property_exists($class, 'resource')) {
+                $vars = get_class_vars($class);
+                if(!isset($vars['resource']['existing_post_type'])) {
+                    Resource::registerPostType($class, $vars['resource']);
+                }
+            }
+
+            return $class;
+        });
+
+        return;
+    }
+
     private function loadHandlebars()
     {
-        if (!class_exists('Mustache_Autoloader') && !class_exists('Mustache_Engine')) {
-            global $Handlebars;
-            require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
-        }
+        global $Handlebars;
+
+        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
 
         \Handlebars\Autoloader::register();
+
         if (file_exists(THEME_CHILD_DIR)
             && file_exists(THEME_CHILD_DIR . '/templates')) {
             $templateDir = THEME_CHILD_DIR . '/templates';
@@ -66,12 +98,16 @@ class Nucleus {
             return;
         }
 
+
+
         $Handlebars = new \Handlebars\Handlebars(
             array(
                 'loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
                 'partials_loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
             )
         );
+        
+        do_action('nucleus_register_helper',  $Handlebars);
 
         $Handlebars->addHelper('wp_footer', function($options) {
             ob_start();
@@ -90,6 +126,30 @@ class Nucleus {
 
             return $wp_head;
         });
+
+        add_action( 'wp_loaded',function() use ($Handlebars){
+            $Handlebars->addHelper('facetwp_pager', function($options) {
+                ob_start();
+                wp_head();
+                $facetwp_pager =  facetwp_display( 'pager' );
+                ob_end_clean();
+
+                return $facetwp_pager;
+            });
+        } );
+
+        $Handlebars->addHelper('is_user_logged_in', function ($template, $context, $args, $source) {
+            $array = explode("{{else}}", $source);
+            if (is_array($array) && count($array) === 2) {
+                if (is_user_logged_in()) {
+                    return $array[0];
+                } else {
+                    return $array[1];
+                }
+            }
+        });
+
+
 
         $Handlebars->addHelper('body_class', function($options) {
             ob_start();
@@ -120,6 +180,7 @@ class Nucleus {
         self::loadFile('config.php');
         self::loadFiles('helpers');
 
+        $this->loadHandlebars();
         return;
     }
 
@@ -142,29 +203,34 @@ class Nucleus {
         }
 
         //get some arrays of our filenames
-        if (file_exists(THEME_PARENT_DIR . $typeURI))
-            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..') );
+        if (file_exists(THEME_PARENT_DIR . $typeURI)) {
+            $parentFiles = array_diff(scandir(THEME_PARENT_DIR . $typeURI), array('.', '..'));
+        }
 
-
-        if (file_exists(THEME_CHILD_DIR . $typeURI))
-            $childFiles =  array_diff( scandir( THEME_CHILD_DIR . $typeURI ), array('.', '..') );
-
+        if (file_exists(THEME_CHILD_DIR . $typeURI)) {
+            $childFiles = array_diff(scandir(THEME_CHILD_DIR . $typeURI ), array('.', '..'));
+        }
 
         //get the diff and remove dupes from parent (child overrides parent)
-        if (isset($parentFiles) && isset($childFiles))
+        if (isset($parentFiles) && isset($childFiles)) {
             $parentFiles = array_diff($parentFiles, $childFiles);
+        }
 
         //load remaining parent files
         if (isset($parentFiles)) {
             foreach ($parentFiles as $file) {
-                require_once( THEME_PARENT_DIR . $typeURI . $file);
+                if (!is_dir(THEME_PARENT_DIR . $typeURI . $file)) {
+                    require_once(THEME_PARENT_DIR . $typeURI . $file);
+                }
             }
         }
 
         //load remaining child files
         if (isset($childFiles) && $childFiles !== $parentFiles) {
             foreach ($childFiles as $file) {
-                require_once(THEME_CHILD_DIR . $typeURI . $file);
+                if (!is_dir(THEME_CHILD_DIR . $typeURI . $file)) {
+                    require_once(THEME_CHILD_DIR . $typeURI . $file);
+                }
             }
         }
 
