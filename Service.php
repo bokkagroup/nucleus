@@ -5,7 +5,7 @@ namespace CatalystWP\Nucleus;
 Class Service
 {
     private $modelClass;
-    private $postType;
+    public $postType;
     private $queryArgs;
     private $query;
     private $paged;

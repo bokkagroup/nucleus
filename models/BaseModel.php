@@ -43,7 +43,7 @@ Class Model
         }
 
         if (method_exists($this, 'initialize')) {
-            $this->initialize($options);
+            $this->initialize();
         }
 
         if (isset($this->options['parent_blog'])) {
@@ -77,7 +77,12 @@ Class Model
     public function createProperties($data = array())
     {
         foreach ($data as $key => $value) {
-            $this->{$key} = $value;
+        	if($key === 'post_content' && isset($data->ID)) {
+        		$this->{$key} = apply_filters('the_content', get_post_field('post_content', $data->ID));
+			} else {
+				$this->{$key} = $value;
+			}
+
         }
 
         return;
