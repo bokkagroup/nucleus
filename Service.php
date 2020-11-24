@@ -69,7 +69,7 @@ Class Service
         global $wp_query;
 
         //for posts that don't need to be queried
-        if (is_date() || is_category()) {
+        if (is_date() || is_category() || is_archive()) {
             $collection = $wp_query->posts;
         } else {
             $args = array(

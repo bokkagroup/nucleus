@@ -41,7 +41,7 @@ class Controller
 			}
 
 
-			$data = new Model($args);
+			$data = $this->model;
 			$data->posts = $this->model->service->getAll();
 			$data->pagination = $this->model->service->getPagination();
 			$this->view = $this->loadView('overview');
