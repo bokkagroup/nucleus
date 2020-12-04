@@ -138,6 +138,15 @@ class Nucleus {
             });
         } );
 
+        $Handlebars->addHelper('wp_body_open', function($options) {
+            ob_start();
+            wp_body_open();
+            $wp_body_open = ob_get_contents();
+            ob_end_clean();
+
+            return $wp_body_open;
+        });
+
         $Handlebars->addHelper('is_user_logged_in', function ($template, $context, $args, $source) {
             $array = explode("{{else}}", $source);
             if (is_array($array) && count($array) === 2) {
