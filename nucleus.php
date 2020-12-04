@@ -11,6 +11,8 @@ Author URI: http://bokkagroup.com
 namespace CatalystWP;
 
 use CatalystWP\Nucleus\Resource as Resource;
+use Handlebars\Handlebars;
+use Handlebars\Loader\FilesystemLoader;
 
 /**
  * CatalystWP
@@ -83,9 +85,7 @@ class Nucleus {
     {
         global $Handlebars;
 
-        require_once(CATALYST_WP_NUCLEUS_DIRECTORY . 'lib/Handlebars/Autoloader.php');
 
-        \Handlebars\Autoloader::register();
 
         if (file_exists(THEME_CHILD_DIR)
             && file_exists(THEME_CHILD_DIR . '/templates')) {
@@ -100,13 +100,13 @@ class Nucleus {
 
 
 
-        $Handlebars = new \Handlebars\Handlebars(
+        $Handlebars = new Handlebars(
             array(
-                'loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
-                'partials_loader' => new \Handlebars\Loader\FilesystemLoader($templateDir),
+                'loader' => new FilesystemLoader($templateDir),
+                'partials_loader' => new FilesystemLoader($templateDir),
             )
         );
-        
+
         do_action('nucleus_register_helper',  $Handlebars);
 
         $Handlebars->addHelper('wp_footer', function($options) {
