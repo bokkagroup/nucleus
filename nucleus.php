@@ -93,7 +93,7 @@ class Nucleus {
 
         $Handlebars->addHelper('wp_body_open', function($options) {
             ob_start();
-            do_action('wp_body_open');
+            wp_body_open();
             $wp_body_open = ob_get_contents();
             ob_end_clean();
 
