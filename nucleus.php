@@ -91,6 +91,15 @@ class Nucleus {
             return $wp_head;
         });
 
+        $Handlebars->addHelper('wp_body_open', function($options) {
+            ob_start();
+            do_action('wp_body_open');
+            $wp_body_open = ob_get_contents();
+            ob_end_clean();
+
+            return $wp_body_open;
+        });
+
         $Handlebars->addHelper('body_class', function($options) {
             ob_start();
             body_class();
