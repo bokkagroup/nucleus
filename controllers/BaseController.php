@@ -87,31 +87,42 @@ class Controller
 		return false;
 	}
 
-	public function loadView($viewType = false)
-	{
-		//parse view class name
-		$nameSpace = explode('\\', get_class($this));
-		$viewClass = '\CatalystWP\\' . $nameSpace[1] . '\\views\\' . explode("Controller", end($nameSpace))[0] . 'View';
 
-		//instantiate the view
-		if (class_exists($viewClass)) {
-			return new $viewClass($viewType);
-		}
+    /**
+     * Loads and instantiates model
+     * @return [type] [description]
+     */
+    public function loadModel()
+    {
+        //parse model class name
+        $nameSpace = explode('\\', get_class($this));
+        $controllerIndex = array_search('controllers',$nameSpace);
+        $themeDirectories = array_slice($nameSpace,1,$controllerIndex - 1);
+        $modelClass = '\CatalystWP\\'.implode('\\',$themeDirectories).'\\models\\'. explode("Controller",  end($nameSpace) )[0];
 
-		return false;
-	}
+        //instantiate the model
+        if (class_exists($modelClass)) {
+            return new $modelClass($this->options);
+        }
 
-	private function redirectArchivePage($isArchive, $archive)
-	{
-		$post_type_link = get_post_type_archive_link(getModelSlug(get_class($this->model)));
-		$page_permalink = get_the_permalink(end(array_filter((explode('/', $archive)))));
-		if ($isArchive && $post_type_link !== $page_permalink) {
-			header("Location: " . get_post_type_archive_link(getModelSlug(get_class($this->model))));
-			exit();
-		} else {
-			return;
-		}
-	}
+        return false;
+    }
+
+    public function loadView($viewType = false)
+    {
+        //parse view class name
+        $nameSpace = explode('\\', get_class($this));
+        $controllerIndex = array_search('controllers',$nameSpace);
+        $themeDirectories = array_slice($nameSpace,1,$controllerIndex - 1);
+        $viewClass = '\CatalystWP\\'.implode('\\',$themeDirectories).'\\views\\'. explode("Controller",  end($nameSpace) )[0] .'View';
+
+        //instantiate the view
+        if (class_exists($viewClass)) {
+            return new $viewClass($viewType);
+        }
+
+        return false;
+    }
 
 	private function isArchivePage($archive)
 	{
