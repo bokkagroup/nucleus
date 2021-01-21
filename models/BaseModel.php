@@ -13,7 +13,8 @@ Class Model
         $data = array();
         $this->options = $options;
 
-        if (isset($this->options['parent_blog'])) {
+
+		if (isset($this->options['parent_blog'])) {
             switch_to_blog($this->options['parent_blog']);
         }
 
@@ -27,7 +28,27 @@ Class Model
             }
         }
 
+
+
         $this->service = new Service(get_class($this));
+
+        //Check to see if this is an archive page to load all posts
+		if((isset($this->options['archive_page'])
+				&& $this->options['post_id'])
+			|| is_post_type_archive($this->service->postType)
+			|| is_home()
+			|| is_archive()) {
+
+			//we need to make sure if this is an archive page we don't keep loading all the posts for each post loaded (infinite loop)
+			//work for pages that dont have an id set
+			if(!isset($data->ID) ||
+				//if id is set we need to make sure the ID isn't of the same post type (this is only for pages that have archive_page set
+				(get_post_type($data->ID) !== $this->service->postType && isset($this->options['archive_page']))) {
+				$this->posts = $this->service->getAll();
+				$this->pagination = $this->service->getPagination();
+			}
+
+		}
 
         // TODO: Attach ACF data after filtering so we don't have to explicitly
         // include all custom fields in our model

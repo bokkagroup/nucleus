@@ -138,6 +138,7 @@ Class Service
 
     private function applyFilters($array)
     {
+
         $results = array_map(function($item){
 
             if (isset($item->ID)) {
