@@ -104,6 +104,7 @@ class Nucleus {
             array(
                 'loader' => new FilesystemLoader($templateDir),
                 'partials_loader' => new FilesystemLoader($templateDir),
+                "enableDataVariables" => true
             )
         );
 
