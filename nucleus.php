@@ -4,7 +4,7 @@ Plugin Name: Catalyst WP - Nucleus
 Plugin URI: http://github.com
 Description: Creates a global interface for handling MVC components in a Wordpress Theme. It's main purpose is to provide the base utility classes that allow for an organized code structure.
 Author: Bokka Group
-Version: 0.2.6
+Version: 0.2.8
 Author URI: http://bokkagroup.com
 */
 

@@ -102,15 +102,15 @@ Class Service
      */
     public function getPagination()
     {
-    	if(isset($this->query) && isset($this->query->max_mum_pages)) {
+       if(isset($this->query) && isset($this->query->max_num_pages)) {
 
-			$pagination = paginate_links(array(
-				'current' => max(1, $this->paged),
-				'total' => $this->query->max_num_pages
-			));
+            $pagination = paginate_links(array(
+                'current' => max(1, $this->paged),
+                'total' => $this->query->max_num_pages
+            ));
 
-			return $pagination;
-		}
+            return $pagination;
+        }
 
     }
 
