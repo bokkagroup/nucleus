@@ -158,11 +158,13 @@ Class Menu
             $is_child = true;
         }
 
-        foreach($menu_links as $key => $value) {
-            $menu_links[$key] = $callback($value, $key);
+        if (isset($menu_links) && is_array($menu_links)) {
+            foreach($menu_links as $key => $value) {
+                $menu_links[$key] = $callback($value, $key);
 
-            if (isset($value['child_menu'])) {
-                $menu_links[$key]['child_menu'] = Menu::updateMenuItems($callback, $value['child_menu']);
+                if (isset($value['child_menu'])) {
+                    $menu_links[$key]['child_menu'] = Menu::updateMenuItems($callback, $value['child_menu']);
+                }
             }
         }
 
